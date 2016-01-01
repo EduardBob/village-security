@@ -1,0 +1,46 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="social_login_margin">290dp</dimen>
+    <dimen name="agree_margin_top">335dp</dimen>
+    <dimen name="text_size_agree">12dp</dimen>
+    <dimen name="agree_text_marginleft">15dp</dimen>
+    <dimen name="name_edit_text_marginT">100dp</dimen>
+    <dimen name="copyrightsize">9sp</dimen>
+    <dimen name="freemembershipaligntop">54dp</dimen>
+
+    <dimen name="shadow_width">15dp</dimen>
+    <dimen name="slidingmenu_offset">60dp</dimen>
+    <dimen name="slidingmenu_offsetBig">250dp</dimen>
+    <dimen name="joinmargintop">395dp</dimen>
+    <dimen name="padding_left_list">10dp</dimen>
+    <dimen name="divider_height">1dp</dimen>
+
+    <dimen name="size_20sp">20sp</dimen>
+    <dimen name="size_16sp">16sp</dimen>
+    <dimen name="size_14sp">14sp</dimen>
+    <dimen name="size_18sp">18sp</dimen>
+    <dimen name="size_22sp">22sp</dimen>
+    <dimen name="size_12sp">12sp</dimen>
+    <dimen name="size_10sp">10sp</dimen>
+    <dimen name="size_13sp">13sp</dimen>
+    <dimen name="size_11sp">11sp</dimen>
+    <dimen name="size_8sp">8sp</dimen>
+    <dimen name="size_9sp">9sp</dimen>
+    <dimen name="size_15sp">15sp</dimen>
+    <dimen name="size_30sp">30sp</dimen>
+    <dimen name="size_25sp">25sp</dimen>
+    <dimen name="size_17sp">17sp</dimen>
+    <dimen name="size_19sp">19sp</dimen>
+    <dimen name="size_40sp">40sp</dimen>
+    <dimen name="price_block_dollar_symbol_padding">2dp</dimen>
+    <dimen name="price_block_dollar_symbol_padding_left">2dp</dimen>
+    <dimen name="margin_bridgemlive_post_avatar">10dp</dimen>
+    <dimen name="size_bridgemlive_post_avatar">40dp</dimen>
+    <dimen name="padding_bridgemlive_name">16dp</dimen>
+    <dimen name="padding_bridgemlive_date">16dp</dimen>
+    <dimen name="padding_bridgemlive_post_text">16dp</dimen>
+    <dimen name="bridgemlive_post_image_dimens">200dp</dimen>
+
+</resources>

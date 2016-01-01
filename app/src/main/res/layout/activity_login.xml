@@ -1,0 +1,183 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:gravity="center_horizontal"
+    android:orientation="vertical"  tools:context=".LoginActivity"
+    android:background="@drawable/bg"
+    android:animateLayoutChanges="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout android:id="@+id/head" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="vertical"
+                android:layout_marginTop="50dp">
+                <LinearLayout
+                    android:layout_marginBottom="30dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:id="@+id/linearLayout"
+                    android:padding="0dp"
+                    android:layout_centerHorizontal="true">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:textSize="18sp"
+                        android:text='Добро пожаловать в'
+                        android:textAlignment="center"
+                        android:textColor="#FFF"
+                        android:singleLine="true">
+                    </TextView>
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:text='"ПРИВРАТНИК"'
+                        android:textSize="26dp"
+                        android:textAlignment="center"
+                        android:textStyle="bold"
+                        android:textColor="#FFF"
+                        android:layout_margin="0dp"
+                        android:padding="0dp">
+                    </TextView>
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/login_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/iconphone"/>
+
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:textSize="18sp"
+                        android:text='+7('
+                        android:textAlignment="center"
+                        android:textColor="#FFF"
+                        android:singleLine="true">
+                    </TextView>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:textSize="18sp"
+                        android:textColor="#FFF"
+                        android:id="@+id/login_phone_1"
+                        android:hint="___"
+                        android:maxLength="3"
+                        android:background="@android:color/transparent"
+                        android:textColorHint="#fff"
+                        android:inputType="phone"/>
+
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:textSize="18sp"
+                        android:text=')'
+                        android:textAlignment="center"
+                        android:textColor="#FFF"
+                        android:singleLine="true">
+                    </TextView>
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:textSize="18sp"
+                        android:textColorHint="#fff"
+                        android:textColor="#FFF"
+                        android:id="@+id/login_phone_2"
+                        android:hint="_______"
+                        android:maxLength="7"
+                        android:background="@android:color/transparent"
+                        android:layout_weight="1"
+                        android:inputType="phone"/>
+
+                </LinearLayout>
+                <View
+                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#929194"></View>
+
+                <LinearLayout
+                    android:id="@+id/password_layout"
+                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/iconpass"/>
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:textSize="18sp"
+                        android:textColor="#FFF"
+                        android:id="@+id/password"
+                        android:hint="Пароль"
+                        android:background="@android:color/transparent"
+                        android:textColorHint="#fff"
+                        android:inputType="textPassword"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_marginTop="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#929194"></View>
+
+                <TextView
+                    android:id="@+id/login_button"
+                    android:layout_marginTop="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Войти"
+                    android:textSize="18sp"
+                    android:padding="16dp"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    android:textColor="#fff"
+                    android:fontFamily="'Roboto', sans-serif"
+                    android:background="#F96332"
+                    android:gravity="center_horizontal" />
+            </LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>
+            </LinearLayout>
+
+
+
+

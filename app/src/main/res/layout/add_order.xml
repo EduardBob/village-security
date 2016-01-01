@@ -1,0 +1,200 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:id="@+id/main_layout"
+    android:animateLayoutChanges="true">
+
+    <RelativeLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:background="#F96332"
+                android:src="@drawable/lightarrowleft"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:id="@+id/left_button"
+                android:paddingLeft="16dp"
+                android:paddingRight="4dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="'Roboto',sans-serif"
+                android:textSize="26dp"
+                android:text="Добавить заявку"
+                android:textAlignment="center"
+                android:textColor="#FFF"
+                android:singleLine="true"
+                android:id="@+id/textView"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true">
+            </TextView>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
+        android:layout_below="@+id/email_login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:background="#fff"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/email_login_form"
+                    android:layout_centerHorizontal="true"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:textColor="#000"
+                        android:textSize="16dp"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Услуга:"
+                        android:id="@+id/textView2"
+                        android:layout_marginBottom="8dp" />
+
+                    <Spinner
+                        android:textColor="#000"
+                        android:layout_marginBottom="8dp"
+                        android:textSize="18sp"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/service" />
+
+                    <LinearLayout
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp">
+                        <Button
+                            android:layout_gravity="center_vertical"
+                            android:padding="16dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/date_time_picker"
+                            android:fontFamily="'Roboto',sans-serif"
+                            android:text="Выбрать дату"
+                            android:background="@drawable/button_common"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="16dp"
+                            android:orientation="vertical"
+                            android:layout_gravity="center_vertical">
+                            <EditText
+                                android:maxLength="10"
+                                android:background="#fff"
+                                android:layout_marginLeft="16dp"
+                                android:textColor="#000"
+                                android:textSize="18sp"
+                                android:fontFamily="'Roboto',sans-serif"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="гггг-мм-дд"
+                                android:paddingRight="16dp"
+                                android:id="@+id/date_string" />
+                            <View android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="#000"
+                                android:layout_marginBottom="4dp"></View>
+                            <EditText
+                                android:maxLength="5"
+                                android:background="#fff"
+                                android:layout_marginLeft="16dp"
+                                android:textColor="#000"
+                                android:textSize="18sp"
+                                android:fontFamily="'Roboto',sans-serif"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="чч:мм"
+                                android:paddingRight="16dp"
+                                android:id="@+id/time_string" />
+                            <View android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:background="#000"
+                                android:layout_marginBottom="8dp"></View>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <EditText
+                        android:layout_marginTop="12dp"
+                        android:paddingLeft="16dp"
+                        android:textColor="#000"
+                        android:textSize="18sp"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="От кого, ФИО"
+                        android:id="@+id/from"
+                        android:background="#fff"/>
+
+                    <View android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#000"
+                        android:layout_marginBottom="8dp"></View>
+
+                    <EditText
+                        android:layout_marginTop="12dp"
+                        android:paddingLeft="16dp"
+                        android:textColor="#000"
+                        android:textSize="18sp"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="На кого - авто или посетитель"
+                        android:id="@+id/to"
+                        android:background="#fff"/>
+
+                    <View android:layout_width="match_parent"
+                        android:layout_height="1px"
+                        android:background="#000"
+                        android:layout_marginBottom="8dp"></View>
+
+                    <CheckBox
+                        android:layout_marginTop="12dp"
+                        android:textSize="18sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="О правилах и стоимости предупрежден*"
+                        android:id="@+id/rights"
+                        android:layout_marginBottom="8dp"
+                        android:clickable="true"
+                        android:enabled="true" />
+
+                    <Button
+                        android:layout_marginTop="60px"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Оформить заявку"
+                        android:id="@+id/complete"
+                        android:padding="16dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/button_common"/>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+</RelativeLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.security.village" >
+
+    <uses-permission android:name="ANDROID.PERMISSION.INTERNET"></uses-permission>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/house"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <activity android:name=".activity.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.ActiveOrders"/>
+        <activity android:name=".activity.OneOrder"/>
+        <activity android:name=".activity.AddOrder"/>
+        <activity android:name=".activity.AllOrders"/>
+    </application>
+
+</manifest>

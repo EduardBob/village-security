@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/order"
+    android:animateLayoutChanges="true">
+
+    <LinearLayout
+        android:background="@drawable/order_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:maxLines="3"
+                android:id="@+id/name_who_booked"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingRight="8dp"
+                android:fontFamily="'Roboto',sans-serif"
+                android:textSize="18sp"
+                android:text="Заявитель"
+                android:textColor="#000"
+                android:layout_toLeftOf="@+id/price"
+                android:layout_toStartOf="@+id/price"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+            <TextView
+                android:visibility="visible"
+                android:id="@+id/price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="8dp"
+                android:fontFamily="'Roboto',sans-serif"
+                android:textSize="18sp"
+                android:text="Бесплатно"
+                android:textColor="#000"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <View android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:background="#000" />
+
+       <RelativeLayout
+           android:layout_marginLeft="2px"
+           android:layout_marginRight="2px"
+           android:background="#DCDCDC"
+           android:padding="16dp"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+           <ImageView
+               android:visibility="visible"
+               android:layout_width="25dp"
+               android:layout_height="25dp"
+               android:id="@+id/image"
+               android:layout_marginRight="8dp"
+               />
+           <TextView
+               android:layout_toRightOf="@+id/image"
+               android:layout_toEndOf="@+id/image"
+               android:layout_toLeftOf="@+id/id"
+               android:layout_toStartOf="@+id/id"
+               android:layout_gravity="center_vertical"
+               android:maxLines="3"
+               android:id="@+id/name_who_coming"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:fontFamily="'Roboto',sans-serif"
+               android:textSize="18sp"
+               android:text="Заявитель"
+               android:textColor="#000" />
+           <TextView
+               android:visibility="visible"
+               android:id="@+id/id"
+               android:paddingLeft="8dp"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:fontFamily="'Roboto',sans-serif"
+               android:textSize="18sp"
+               android:text="Бесплатно"
+               android:textColor="#000"
+               android:layout_alignParentRight="true"
+               android:layout_alignParentEnd="true" />
+       </RelativeLayout>
+        <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="#000"></View>
+        <LinearLayout
+            android:paddingLeft="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:id="@+id/check_box_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Оплатил"
+                android:id="@+id/payment"
+                android:layout_marginBottom="4dp"
+                android:clickable="false"
+                android:enabled="false" />
+
+            <CheckBox
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Въехал/зашел"
+                android:id="@+id/arrived"
+                android:clickable="false"
+                android:enabled="false" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
