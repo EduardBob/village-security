@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Village</string>
+    <string name="app_name">Привратник</string>
     <string name="reset">Сбросить</string>
     <string name="set_date">Дата</string>
     <string name="set_time">Время</string>

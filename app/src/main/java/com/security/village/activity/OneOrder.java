@@ -7,13 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.security.village.HttpErrorHandler;
 import com.security.village.ObjectMap;
@@ -50,6 +44,9 @@ public class OneOrder extends Activity {
     private TextView declarer;
     private TextView object;
     private TextView info;
+    private TextView paymentTxt;
+    private RelativeLayout arrivedLayout;
+    private RelativeLayout paymentLayout;
     private CheckBox payment;
     private CheckBox arrived;
     private Button complete;
@@ -79,7 +76,10 @@ public class OneOrder extends Activity {
         object = (TextView) findViewById(R.id.object);
         info = (TextView) findViewById(R.id.info);
         payment = (CheckBox) findViewById(R.id.payment);
+        paymentTxt = (TextView) findViewById(R.id.payment_txt);
         arrived = (CheckBox) findViewById(R.id.arrived);
+        arrivedLayout = (RelativeLayout) findViewById(R.id.arrived_layout);
+        paymentLayout = (RelativeLayout) findViewById(R.id.payment_layout);
         complete = (Button) findViewById(R.id.complete);
 
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
@@ -96,17 +96,17 @@ public class OneOrder extends Activity {
 
         swipeLayout.setEnabled(false);
 
-        if(Integer.parseInt(AppSettingsProvider.getInstance().getSdkVersion(OneOrder.this)) <= 10 ){
-            payment.setPadding(payment.getPaddingLeft() + 26,
-                    payment.getPaddingTop(),
-                    payment.getPaddingRight(),
-                    payment.getPaddingBottom());
-
-            arrived.setPadding(arrived.getPaddingLeft() + 26,
-                    arrived.getPaddingTop(),
-                    arrived.getPaddingRight(),
-                    arrived.getPaddingBottom());
-        }
+//        if(Integer.parseInt(AppSettingsProvider.getInstance().getSdkVersion(OneOrder.this)) <= 10 ){
+//            payment.setPadding(payment.getPaddingLeft() + 26,
+//                    payment.getPaddingTop(),
+//                    payment.getPaddingRight(),
+//                    payment.getPaddingBottom());
+//
+//            arrived.setPadding(arrived.getPaddingLeft() + 26,
+//                    arrived.getPaddingTop(),
+//                    arrived.getPaddingRight(),
+//                    arrived.getPaddingBottom());
+//        }
 
         complete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,12 +141,40 @@ public class OneOrder extends Activity {
             }
         });
 
+        paymentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!payment.isChecked()) {
+                    payment.setChecked(true);
+                    map.put("payment_status", "paid");
+                } else {
+                    payment.setChecked(false);
+                    map.put("payment_status", "not_paid");
+                }
+                complete.setEnabled(true);
+            }
+        });
+
         arrived.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (arrived.isChecked()) {
                     map.put("status", "done");
                 } else {
+                    map.put("status", "processing");
+                }
+                complete.setEnabled(true);
+            }
+        });
+
+        arrivedLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!arrived.isChecked()) {
+                    arrived.setChecked(true);
+                    map.put("status", "done");
+                } else {
+                    arrived.setChecked(false);
                     map.put("status", "processing");
                 }
                 complete.setEnabled(true);
@@ -209,18 +237,19 @@ public class OneOrder extends Activity {
         if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)){
             payment.setChecked(true);
             payment.setEnabled(false);
+            paymentLayout.setEnabled(false);
         }
         if (Float.parseFloat(order.getPrice()) == 0){
             info.setText("Бесплатно");
-            payment.setVisibility(View.GONE);
+            paymentLayout.setVisibility(View.GONE);
         }else{
             info.setText(order.getPrice().substring(0,order.getPrice().indexOf(".")) + " рублей");
         }
 
         if(order.getPayment_type().equalsIgnoreCase("card")){
-            payment.setText("Оплачено online");
+            paymentTxt.setText("Оплачено online");
         } else {
-            payment.setText("Оплачено");
+            paymentTxt.setText("Оплачено");
         }
 
         if (order.getStatus().equalsIgnoreCase(Keys.DONE)){
@@ -228,6 +257,8 @@ public class OneOrder extends Activity {
             complete.setVisibility(View.GONE);
             payment.setEnabled(false);
             arrived.setEnabled(false);
+            arrivedLayout.setEnabled(false);
+            paymentLayout.setEnabled(false);
         }
 
         String dateTime = "";

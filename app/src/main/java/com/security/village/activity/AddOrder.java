@@ -16,16 +16,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.security.village.DateTimePicker;
 import com.security.village.DateUtils;
@@ -64,6 +55,7 @@ public class AddOrder extends Activity implements View.OnTouchListener{
     private EditText from;
     private EditText to;
     private CheckBox rights;
+    private TextView rightsTxt;
     private Button complete;
     private ImageView arrowLeft;
     private RelativeLayout mainLayout;
@@ -125,6 +117,7 @@ public class AddOrder extends Activity implements View.OnTouchListener{
         from = (EditText) findViewById(R.id.from);
         to = (EditText) findViewById(R.id.to);
         rights = (CheckBox) findViewById(R.id.rights);
+        rightsTxt = (TextView) findViewById(R.id.rights_txt);
         complete = (Button) findViewById(R.id.complete);
         arrowLeft = (ImageView) findViewById(R.id.left_button);
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
@@ -149,12 +142,12 @@ public class AddOrder extends Activity implements View.OnTouchListener{
 
         complete.setEnabled(false);
 
-        if(Integer.parseInt(AppSettingsProvider.getInstance().getSdkVersion(AddOrder.this)) <= 10 ){
-            rights.setPadding(rights.getPaddingLeft() + 26,
-                    rights.getPaddingTop(),
-                    rights.getPaddingRight(),
-                    rights.getPaddingBottom());
-        }
+//        if(Integer.parseInt(AppSettingsProvider.getInstance().getSdkVersion(AddOrder.this)) <= 10 ){
+//            rights.setPadding(rights.getPaddingLeft() + 26,
+//                    rights.getPaddingTop(),
+//                    rights.getPaddingRight(),
+//                    rights.getPaddingBottom());
+//        }
 
 
 
@@ -267,6 +260,23 @@ public class AddOrder extends Activity implements View.OnTouchListener{
         rights.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!TextUtils.isEmpty(pickedDate.getText()) && !TextUtils.isEmpty(to.getText()) && !TextUtils.isEmpty(from.getText()) && rights.isChecked()) {
+                    complete.setEnabled(true);
+                } else {
+                    complete.setEnabled(false);
+                }
+            }
+        });
+
+        rightsTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rights.isChecked()) {
+                    rights.setChecked(false);
+                } else {
+                    rights.setChecked(true);
+                }
+
                 if (!TextUtils.isEmpty(pickedDate.getText()) && !TextUtils.isEmpty(to.getText()) && !TextUtils.isEmpty(from.getText()) && rights.isChecked()) {
                     complete.setEnabled(true);
                 } else {
