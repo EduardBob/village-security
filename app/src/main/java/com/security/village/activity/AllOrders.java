@@ -74,7 +74,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
         calendar = Calendar.getInstance();
-        adapter = new OrdersAdapter(this, 0, true);
+        adapter = new OrdersAdapter(this, 0, true, OrdersAdapter.ALL);
         adapter.setActivityClass(AllOrders.class);
         adapter.setListener(this);
 

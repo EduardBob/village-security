@@ -4,23 +4,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.security.village.ObjectMap;
 import com.security.village.R;
 import com.security.village.settingsholder.AppSettingsProvider;
-import com.security.village.settingsholder.Keys;
 import com.security.village.settingsholder.LocalSettingsProvider;
 import com.security.village.webservice.retrofit.ApiNew;
 import com.security.village.webservice.retrofit.RestModuleNew;
@@ -62,7 +58,6 @@ public class LoginActivity extends Activity {
         AppSettingsProvider.getInstance().setSdkVersion(LoginActivity.this, Build.VERSION.SDK);
 
         initializeAllViews();
-        swipeLayout.setRefreshing(true);
         isLoggedIn();
     }
 
@@ -71,14 +66,21 @@ public class LoginActivity extends Activity {
         setState(false);
         String loginString = settingsHolder.getLogin(LoginActivity.this);
         String password = settingsHolder.getPassword(LoginActivity.this);
-        if(loginString != null && password != null){
-            map.put("phone", loginString);
-            map.put("password", password);
-            login();
-        }else{
-            setState(true);
-            swipeLayout.setRefreshing(false);
-        }
+       try{
+           if(loginString != null && password != null){
+               map.put("phone", loginString);
+               map.put("password", password);
+               swipeLayout.setRefreshing(true);
+               login();
+           }else{
+               setState(true);
+               swipeLayout.setRefreshing(false);
+           }
+       } catch (Exception e){
+           e.printStackTrace();
+           setState(true);
+           swipeLayout.setRefreshing(false);
+       }
     }
 
     private void initializeAllViews(){
@@ -104,6 +106,9 @@ public class LoginActivity extends Activity {
                     swipeLayout.setRefreshing(true);
                     setState(false);
                     login();
+                } else {
+                    swipeLayout.setRefreshing(false);
+                    setState(true);
                 }
             }
         });
@@ -178,10 +183,10 @@ public class LoginActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if((TextUtils.isEmpty(login1.getText()) || login1.getText().toString().length() == 3) && TextUtils.isEmpty(login2.getText())){
+                if ((TextUtils.isEmpty(login1.getText()) || login1.getText().toString().length() == 3) && TextUtils.isEmpty(login2.getText())) {
                     login1.requestFocus();
                 }
-                if (s.length() == 7){
+                if (s.length() == 7) {
                     password.requestFocus();
                 }
             }
@@ -232,6 +237,15 @@ public class LoginActivity extends Activity {
         buttonLogin.setEnabled(state);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(AppSettingsProvider.getInstance().getToken(getApplicationContext()).equalsIgnoreCase("")){
+            finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void login(){
         RestModuleNew.provideRestService().post(ApiNew.LOGIN_URL, null, map, new Callback<String>() {
             @Override
@@ -241,6 +255,7 @@ public class LoginActivity extends Activity {
                     settingsHolder.saveToken(LoginActivity.this, "Bearer  " + ObjectMap.getInstance().readValue(s, Token.class).getToken());
                     settingsHolder.saveLogin(LoginActivity.this, map.get("phone"));
                     settingsHolder.savePassword(LoginActivity.this, map.get("password"));
+                    swipeLayout.setRefreshing(false);
                     Intent intent = new Intent(LoginActivity.this, ActiveOrders.class);
                     startActivity(intent);
                 } catch (IOException e) {
@@ -265,6 +280,7 @@ public class LoginActivity extends Activity {
                     }
                     toast("Отсутствует соединение с интернетом");
                 } catch (Exception e) {
+                    swipeLayout.setRefreshing(false);
                     e.printStackTrace();
                     toast("Отсутствует соединение с интернетом");
                 }

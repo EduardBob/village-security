@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.security.village.ObjectMap;
@@ -36,14 +37,19 @@ import retrofit.client.Response;
  */
 public class OrdersAdapter extends ArrayAdapter {
 
+    public static final int ALL = 0;
+    public static final int CUT = 1;
+
     private Context context;
     private Class clasS;
     private List<Orders.Data> mOrdersList;
     private OnOrderClickListener mOnOrderClickListener;
     private boolean allOrders = false;
+    private int style = ALL;
 
-    public OrdersAdapter(Context context, int resource, boolean allOrders) {
+    public OrdersAdapter(Context context, int resource, boolean allOrders, int style) {
         super(context, R.layout.order);
+        this.style = style;
         this.context = context;
         this.allOrders = allOrders;
     }
@@ -147,6 +153,18 @@ public class OrdersAdapter extends ArrayAdapter {
             holder.price.setVisibility(View.GONE);
         }
 
+        switch (style){
+            case ALL:
+                holder.checkBoxContainer.setVisibility(View.VISIBLE);
+                holder.top.setVisibility(View.VISIBLE);
+                //nothing
+                break;
+            case CUT:
+                holder.checkBoxContainer.setVisibility(View.GONE);
+                holder.top.setVisibility(View.GONE);
+                break;
+        }
+
         return convertView;
     }
 
@@ -159,6 +177,7 @@ public class OrdersAdapter extends ArrayAdapter {
         public CheckBox payment;
         public CheckBox arrived;
         public LinearLayout checkBoxContainer;
+        public RelativeLayout top;
         public ImageView image;
             public ViewHolder(View view){
                 this.view = (LinearLayout) view.findViewById(R.id.order);
@@ -169,6 +188,7 @@ public class OrdersAdapter extends ArrayAdapter {
                 payment = (CheckBox) view.findViewById(R.id.payment);
                 arrived = (CheckBox) view.findViewById(R.id.arrived);
                 checkBoxContainer = (LinearLayout) view.findViewById(R.id.check_box_container);
+                top = (RelativeLayout) view.findViewById(R.id.top);
                 image = (ImageView) view.findViewById(R.id.image);
             }
     }

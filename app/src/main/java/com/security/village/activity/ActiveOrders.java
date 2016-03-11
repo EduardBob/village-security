@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,6 +44,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     private ImageView rightButton;
     private ImageView addOrderButton;
     private SwipeRefreshLayout swipeLayout;
+    private FrameLayout my_profile_button;
 
     private HashMap<String, String> map;
     private List<Orders.Data> list;
@@ -52,15 +54,18 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     private int recentMonth;
     private int recentYear;
 
+    private FrameLayout myProfileButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.active_orders);
         map = new HashMap<>();
+        my_profile_button = (FrameLayout) findViewById(R.id.my_profile_button);
         map.put("status", "processing");
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
-        adapter = new OrdersAdapter(this, 0, false);
+        adapter = new OrdersAdapter(this, 0, false, OrdersAdapter.CUT);
         adapter.setActivityClass(ActiveOrders.class);
         adapter.setListener(this);
 
@@ -69,6 +74,14 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         recentYear += Calendar.getInstance().get(Calendar.YEAR);
 
         map.put("from_perform_date", Integer.toString(recentYear) + "-" + Integer.toString(recentMonth) + "-" + Integer.toString(recentDay));
+
+        my_profile_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), MyProfile.class);
+                startActivity(intent);
+            }
+        });
 
         initializeViews();
         getOrders();
@@ -80,6 +93,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     }
 
     private void initializeViews(){
+        myProfileButton = (FrameLayout) findViewById(R.id.my_profile_button);
         ordersList = (ListView) findViewById(R.id.active_orders_list);
         rightButton = (ImageView) findViewById(R.id.right_button);
         hint = (TextView) findViewById(R.id.hint);
