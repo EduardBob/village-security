@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 
+import com.security.village.DateUtils;
 import com.security.village.HttpErrorHandler;
 import com.security.village.ObjectMap;
 import com.security.village.R;
@@ -244,12 +245,17 @@ public class OneOrder extends Activity {
             paymentLayout.setVisibility(View.GONE);
         }else{
             info.setText(order.getPrice().substring(0,order.getPrice().indexOf(".")) + " рублей");
-        }
-
-        if(order.getPayment_type().equalsIgnoreCase("card")){
-            paymentTxt.setText("Оплачено online");
-        } else {
-            paymentTxt.setText("Оплачено");
+            if(order.getPayment_type().equalsIgnoreCase("card")){
+                if(order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
+                    paymentTxt.setText("Оплата on-line");
+                    payment.setEnabled(false);
+                    payment.setChecked(true);
+                } else {
+                    paymentTxt.setText("Оплатить на месте");
+                }
+            } else {
+                paymentTxt.setText("Заказ оплачен");
+            }
         }
 
         if (order.getStatus().equalsIgnoreCase(Keys.DONE)){
@@ -264,7 +270,8 @@ public class OneOrder extends Activity {
         String dateTime = "";
 
         if(order.getPerform_date() != null){
-               dateTime += order.getPerform_date();
+               dateTime += DateUtils.formatDate(order.getPerform_date(), DateUtils.DATE_FORMAT_7, DateUtils.DATE_FORMAT_22);
+            order.getPerform_date();
             if(order.getPerform_time() != null)
                 dateTime += " " + order.getPerform_time();
         }

@@ -187,10 +187,11 @@ public class AddOrder extends Activity implements View.OnTouchListener{
                 if (!TextUtils.isEmpty(pickedDate.getText()) && pickedDate.getText().toString().length() == 10)
                     pickedTime.requestFocus();
                 if (!TextUtils.isEmpty(pickedDate.getText()) && !TextUtils.isEmpty(to.getText()) && !TextUtils.isEmpty(from.getText()) && rights.isChecked()) {
-                    map.put("perform_date", pickedDate.getText().toString());
+                    map.put("perform_date",
+                            DateUtils.formatDate(pickedDate.getText().toString(), DateUtils.DATE_FORMAT_22, DateUtils.DATE_FORMAT_7));
                     complete.setEnabled(true);
                 } else {
-                    map.put("perform_date", pickedDate.getText().toString() + "");
+                    map.put("perform_date", DateUtils.formatDate(pickedDate.getText().toString(), DateUtils.DATE_FORMAT_22, DateUtils.DATE_FORMAT_7) + "");
                     complete.setEnabled(false);
                 }
             }
@@ -335,9 +336,9 @@ public class AddOrder extends Activity implements View.OnTouchListener{
                 (calendar.get(Calendar.MONTH) + 1),
                 calendar.get(Calendar.DAY_OF_MONTH),
                 calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),0), DateUtils.DATE_FORMAT_5);
+                calendar.get(Calendar.MINUTE), 0), DateUtils.DATE_FORMAT_5);
 
-        String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_7);
+        String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_22);
         String time = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_14);
         pickedDate.setText(date);
         pickedTime.setText(time);
@@ -450,12 +451,13 @@ public class AddOrder extends Activity implements View.OnTouchListener{
                         return;
                     }
 
-                String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_7);
+                String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_22);
+                String date2 = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_7);
                 String time = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_14);
                 pickedDate.setText(date);
                 pickedTime.setText(time);
 
-                map.put("perform_date", date);
+                map.put("perform_date", date2);
                 map.put("perform_time",time);
 
                 mDateTimeDialog.dismiss();

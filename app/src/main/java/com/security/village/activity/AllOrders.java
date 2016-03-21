@@ -3,13 +3,20 @@ package com.security.village.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -51,6 +58,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     private TextView hint;
     private ImageView leftButton;
     private TextView activeOrders;
+    private EditText searchBar;
 
     private Calendar calendar;
 
@@ -100,6 +108,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         hint = (TextView) findViewById(R.id.hint);
         leftButton = (ImageView) findViewById(R.id.left_button);
         activeOrders = (TextView) findViewById(R.id.active_orders_button);
+        searchBar = (EditText) findViewById(R.id.search_bar);
         title.setText(Integer.toString(calendar.get(Calendar.DAY_OF_MONTH)) + "." + Integer.toString(calendar.get(Calendar.MONTH) + 1) + "." + Integer.toString(calendar.get(Calendar.YEAR)).substring(2));
 
         ordersList.setAdapter(adapter);
@@ -141,10 +150,60 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                 refreshList();
             }
         });
+
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                    hideKeyBoard();
+
+                    map.put("search", searchBar.getText().toString());
+                    refreshList();
+                    getOrders();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 2) {
+                    refreshList();
+                    map.put("search", searchBar.getText().toString());
+                    getOrders();
+                } else if (editable.length() == 0) {
+                    refreshList();
+                    map.remove("search");
+                    getOrders();
+                }
+            }
+        });
+    }
+
+    private void hideKeyBoard(){
+        try{
+            InputMethodManager inputMethodManager = (InputMethodManager)  AllOrders.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(AllOrders.this.getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void changeDate(int day){
-        Log.d("lastDate","called changeDate();" + " with 'int day = " + Integer.toString(day));
+        Log.d("lastDate", "called changeDate();" + " with 'int day = " + Integer.toString(day));
         if (day != Keys.DATE_THAT_DOESNT_EXIST) {
             calendar.set(Calendar.DAY_OF_MONTH, day);
         }
@@ -160,7 +219,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         }else{
             resultMonth = Integer.toString(calendar.get(Calendar.MONTH) + 1);
         }
-        title.setText(resultDay + "." + resultMonth + "." + Integer.toString(calendar.get(Calendar.YEAR)).substring(2));
+        title.setText(resultDay + "-" + resultMonth + "-" + Integer.toString(calendar.get(Calendar.YEAR)));
         map.put("from_perform_date", Integer.toString(calendar.get(Calendar.YEAR)) + "-" + resultMonth + "-" + resultDay);
         map.put("to_perform_date", Integer.toString(calendar.get(Calendar.YEAR)) + "-" + resultMonth + "-" + resultDay);
     }
@@ -195,6 +254,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     };
 
     private void getOrders(){
+        list.clear();
         RestModuleNew.provideRestService().getAuth(ALL_ORDERS, AppSettingsProvider.getInstance().getToken(AllOrders.this), map, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
@@ -217,9 +277,10 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
 
     public void visualizeOrders(Orders orders){
         List<Orders.Data> listTmp = new ArrayList<>();
+        list.clear();
         for(Orders.Data x : orders.getData()){
-            list.add(x);
-            listTmp.add(x);
+                list.add(x);
+                listTmp.add(x);
         }
 
         if(listTmp.size() < 10){

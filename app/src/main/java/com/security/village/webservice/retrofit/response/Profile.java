@@ -89,153 +89,166 @@ public class Profile implements Serializable {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Building{
-        private String id;
-        private String address;
-        private Village village;
+        private DataBuilding data;
 
         public Building(){}
 
-        public String getId() {
-            return id;
+        public DataBuilding getData() {
+            return data;
         }
 
-        public String getAddress() {
-            return address;
-        }
-
-        public Village getVillage() {
-            return village;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public void setAddress(String address) {
-            this.address = address;
-        }
-
-        public void setVillage(Village village) {
-            this.village = village;
+        public void setData(DataBuilding data) {
+            this.data = data;
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Village{
-            private Data data;
+        public static class DataBuilding{
 
-            public Village(){}
+            private String id;
+            private String address;
+            private Village village;
 
-            public Data getData() {
-                return data;
+            public DataBuilding(){}
+
+            public String getId() {
+                return id;
             }
 
-            public void setData(Data data) {
-                this.data = data;
+            public String getAddress() {
+                return address;
+            }
+
+            public Village getVillage() {
+                return village;
+            }
+
+            public void setId(String id) {
+                this.id = id;
+            }
+
+            public void setAddress(String address) {
+                this.address = address;
+            }
+
+            public void setVillage(Village village) {
+                this.village = village;
+            }
+
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            public static class Village{
+                private Data data;
+
+                public Village(){}
+
+                public Data getData() {
+                    return data;
+                }
+
+                public void setData(Data data) {
+                    this.data = data;
+                }
+            }
+
+            @JsonIgnoreProperties(ignoreUnknown = true)
+            public static class Data{
+                private String name;
+                private String shop_name;
+                private String shop_address;
+                private String service_payment_info;
+                private String service_bottom_text;
+                private String product_payment_info;
+                private String product_bottom_text;
+                private String product_unit_step_kg;
+                private String product_unit_step_bottle;
+                private String product_unit_step_piece;
+                private boolean active;
+
+                public Data(){}
+
+                public String getName() {
+                    return name;
+                }
+
+                public String getProduct_bottom_text() {
+                    return product_bottom_text;
+                }
+
+                public String getProduct_payment_info() {
+                    return product_payment_info;
+                }
+
+                public String getProduct_unit_step_bottle() {
+                    return product_unit_step_bottle;
+                }
+
+                public String getProduct_unit_step_kg() {
+                    return product_unit_step_kg;
+                }
+
+                public String getProduct_unit_step_piece() {
+                    return product_unit_step_piece;
+                }
+
+                public String getService_bottom_text() {
+                    return service_bottom_text;
+                }
+
+                public String getService_payment_info() {
+                    return service_payment_info;
+                }
+
+                public String getShop_address() {
+                    return shop_address;
+                }
+
+                public String getShop_name() {
+                    return shop_name;
+                }
+
+                public void setActive(boolean active) {
+                    this.active = active;
+                }
+
+                public void setName(String name) {
+                    this.name = name;
+                }
+
+                public void setProduct_bottom_text(String product_bottom_text) {
+                    this.product_bottom_text = product_bottom_text;
+                }
+
+                public void setProduct_payment_info(String product_payment_info) {
+                    this.product_payment_info = product_payment_info;
+                }
+
+                public void setProduct_unit_step_bottle(String product_unit_step_bottle) {
+                    this.product_unit_step_bottle = product_unit_step_bottle;
+                }
+
+                public void setProduct_unit_step_kg(String product_unit_step_kg) {
+                    this.product_unit_step_kg = product_unit_step_kg;
+                }
+
+                public void setProduct_unit_step_piece(String product_unit_step_piece) {
+                    this.product_unit_step_piece = product_unit_step_piece;
+                }
+
+                public void setService_bottom_text(String service_bottom_text) {
+                    this.service_bottom_text = service_bottom_text;
+                }
+
+                public void setService_payment_info(String service_payment_info) {
+                    this.service_payment_info = service_payment_info;
+                }
+
+                public void setShop_address(String shop_address) {
+                    this.shop_address = shop_address;
+                }
+
+                public void setShop_name(String shop_name) {
+                    this.shop_name = shop_name;
+                }
             }
         }
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class Data{
-            private String name;
-            private String shop_name;
-            private String shop_address;
-            private String service_payment_info;
-            private String service_bottom_text;
-            private String product_payment_info;
-            private String product_bottom_text;
-            private String product_unit_step_kg;
-            private String product_unit_step_bottle;
-            private String product_unit_step_piece;
-            private boolean active;
-
-            public Data(){}
-
-            public String getName() {
-                return name;
-            }
-
-            public String getProduct_bottom_text() {
-                return product_bottom_text;
-            }
-
-            public String getProduct_payment_info() {
-                return product_payment_info;
-            }
-
-            public String getProduct_unit_step_bottle() {
-                return product_unit_step_bottle;
-            }
-
-            public String getProduct_unit_step_kg() {
-                return product_unit_step_kg;
-            }
-
-            public String getProduct_unit_step_piece() {
-                return product_unit_step_piece;
-            }
-
-            public String getService_bottom_text() {
-                return service_bottom_text;
-            }
-
-            public String getService_payment_info() {
-                return service_payment_info;
-            }
-
-            public String getShop_address() {
-                return shop_address;
-            }
-
-            public String getShop_name() {
-                return shop_name;
-            }
-
-            public void setActive(boolean active) {
-                this.active = active;
-            }
-
-            public void setName(String name) {
-                this.name = name;
-            }
-
-            public void setProduct_bottom_text(String product_bottom_text) {
-                this.product_bottom_text = product_bottom_text;
-            }
-
-            public void setProduct_payment_info(String product_payment_info) {
-                this.product_payment_info = product_payment_info;
-            }
-
-            public void setProduct_unit_step_bottle(String product_unit_step_bottle) {
-                this.product_unit_step_bottle = product_unit_step_bottle;
-            }
-
-            public void setProduct_unit_step_kg(String product_unit_step_kg) {
-                this.product_unit_step_kg = product_unit_step_kg;
-            }
-
-            public void setProduct_unit_step_piece(String product_unit_step_piece) {
-                this.product_unit_step_piece = product_unit_step_piece;
-            }
-
-            public void setService_bottom_text(String service_bottom_text) {
-                this.service_bottom_text = service_bottom_text;
-            }
-
-            public void setService_payment_info(String service_payment_info) {
-                this.service_payment_info = service_payment_info;
-            }
-
-            public void setShop_address(String shop_address) {
-                this.shop_address = shop_address;
-            }
-
-            public void setShop_name(String shop_name) {
-                this.shop_name = shop_name;
-            }
-        }
-
     }
-
-
 }

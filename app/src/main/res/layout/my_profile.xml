@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/bg"
+    android:animateLayoutChanges="true"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="'Roboto',sans-serif"
                 android:textSize="26dp"
-                android:text="МОЙ ПРОФИЛЬ"
+                android:text="Мой профиль"
                 android:textColor="#FFF"
                 android:singleLine="true"
                 android:id="@+id/textView"
@@ -111,7 +112,7 @@
         android:textStyle="bold"
         android:textColor="#fff"
         android:fontFamily="'Roboto', sans-serif"
-        android:background="@color/common_dark_gray"
+        android:background="#50F96332"
         android:gravity="center_horizontal" />
 </RelativeLayout>
 </LinearLayout>

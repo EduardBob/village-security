@@ -131,10 +131,16 @@ public class OrdersAdapter extends ArrayAdapter {
                 holder.payment.setChecked(false);
             }
             if(order.getPayment_type().equalsIgnoreCase("card")){
-                holder.payment.setText("Оплачено online");
+                if(order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
+                    holder.payment.setText("Оплата on-line");
+                    holder.payment.setChecked(true);
+                } else {
+                    holder.payment.setText("Оплатить на месте");
+                }
             } else {
-                holder.payment.setText("Оплачено");
+                holder.payment.setText("Заказ оплачен");
             }
+
             if (Float.parseFloat(order.getPrice()) == 0){
                 holder.price.setText("Бесплатно");
                 holder.payment.setVisibility(View.GONE);

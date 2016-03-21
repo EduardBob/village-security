@@ -3,6 +3,7 @@ package com.security.village.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -119,10 +120,10 @@ public class MyProfile extends Activity {
 
         try{
             String s = "";
-            if(profile.getData().getBuilding().getVillage().getData().getName() != null)
-                s += profile.getData().getBuilding().getVillage().getData().getName();
-            if(profile.getData().getBuilding().getAddress() != null)
-                s += ", " + profile.getData().getBuilding().getAddress();
+            if(profile.getData().getBuilding().getData().getVillage().getData().getName() != null)
+                s += profile.getData().getBuilding().getData().getVillage().getData().getName();
+            if(profile.getData().getBuilding().getData().getAddress() != null)
+                s += ", " + profile.getData().getBuilding().getData().getAddress();
             country.setText(s);
         } catch (Exception e){
             e.printStackTrace();

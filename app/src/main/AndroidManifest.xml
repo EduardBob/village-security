@@ -26,7 +26,8 @@
         <activity android:name=".activity.AddOrder"
             android:screenOrientation="portrait"/>
         <activity android:name=".activity.AllOrders"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".activity.MyProfile"
             android:screenOrientation="portrait"/>
     </application>

@@ -1,243 +1,267 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" android:gravity="center_horizontal"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:background="@drawable/bg"
-    android:animateLayoutChanges="true">
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
 
-    <RelativeLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/email_login_form"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp">
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp">
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <ImageView
-                android:background="#F96332"
-                android:src="@drawable/lightarrowleft"
+                android:id="@+id/left_button"
                 android:layout_width="60dp"
                 android:layout_height="40dp"
-                android:id="@+id/left_button"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="#F96332"
                 android:paddingLeft="16dp"
                 android:paddingRight="4dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true" />
+                android:src="@drawable/lightarrowleft" />
 
-            <TextView android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:fontFamily="'Roboto',sans-serif"
-                android:textSize="26dp"
+                android:singleLine="true"
                 android:text="Заявка"
                 android:textAlignment="center"
                 android:textColor="#FFF"
-                android:singleLine="true"
-                android:id="@+id/textView"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true">
-            </TextView>
+                android:textSize="26dp"></TextView>
         </RelativeLayout>
 
     </RelativeLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
-        android:layout_below="@+id/email_login_form"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/email_login_form">
+
         <ScrollView
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff">
 
-                 <LinearLayout
-                         android:id="@+id/layout_holder"
-                         android:background="#fff"
-                         android:orientation="vertical"
-                         android:layout_width="match_parent"
-                         android:layout_height="match_parent"
-                         android:layout_centerHorizontal="true"
-                         android:paddingLeft="16dp"
-                         android:paddingTop="16dp"
-                         android:paddingRight="16dp">
+            <LinearLayout
+                android:id="@+id/layout_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:background="#fff"
+                android:orientation="vertical"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp">
 
-                     <TextView
-                             android:textColor="@color/new_grey1"
-                             android:textSize="14dp"
-                             android:fontFamily="'Roboto',sans-serif"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:text="Заявитель:"
-                             android:id="@+id/textView2"
-                             android:layout_marginBottom="8dp" />
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="Заявитель:"
+                    android:textColor="@color/new_grey1"
+                    android:textSize="14dp" />
 
-                     <TextView
-                             android:textStyle="bold"
-                             android:textColor="#000"
-                             android:layout_marginBottom="8dp"
-                             android:textSize="18sp"
-                             android:fontFamily="'Roboto',sans-serif"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:text="New Text"
-                             android:id="@+id/declarer" />
+                <TextView
+                    android:id="@+id/declarer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="New Text"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                     <TextView
-                             android:layout_marginBottom="8dp"
-                             android:textColor="@color/new_grey1"
-                             android:textSize="14dp"
-                             android:fontFamily="'Roboto',sans-serif"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:text="Услуга:"
-                             android:id="@+id/textView4" />
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="Услуга:"
+                    android:textColor="@color/new_grey1"
+                    android:textSize="14dp" />
 
-                     <TextView
-                             android:textStyle="bold"
-                             android:textColor="#000"
-                             android:layout_marginBottom="8dp"
-                             android:textSize="18sp"
-                             android:fontFamily="'Roboto',sans-serif"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:text="New Text"
-                             android:id="@+id/service" />
+                <TextView
+                    android:id="@+id/service"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="New Text"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                     <TextView
-                             android:textColor="@color/new_grey1"
-                             android:textSize="14dp"
-                             android:layout_marginBottom="8dp"
-                             android:fontFamily="'Roboto',sans-serif"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:text="Дата и время:"
-                             android:id="@+id/date_time_label" />
+                <TextView
+                    android:id="@+id/date_time_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="Дата и время:"
+                    android:textColor="@color/new_grey1"
+                    android:textSize="14dp" />
 
-                     <TextView
-                             android:textStyle="bold"
-                             android:textColor="#000"
-                             android:layout_marginBottom="8dp"
-                             android:textSize="18sp"
-                             android:fontFamily="'Roboto',sans-serif"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:text="New Text"
-                             android:id="@+id/date_time" />
+                <TextView
+                    android:id="@+id/date_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="New Text"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-                     <LinearLayout
-                             android:orientation="vertical"
-                             android:layout_width="match_parent"
-                             android:layout_height="wrap_content"
-                             android:layout_gravity="center_horizontal"
-                             android:background="@drawable/order_style">
-                         <TextView
-                                 android:textStyle="bold"
-                                 android:textColor="#000"
-                                 android:textSize="18sp"
-                                 android:padding="16dp"
-                                 android:fontFamily="'Roboto',sans-serif"
-                                 android:layout_width="wrap_content"
-                                 android:layout_height="wrap_content"
-                                 android:text="New Text"
-                                 android:id="@+id/object" />
-                         <View android:layout_height="2px"
-                               android:layout_width="match_parent"
-                               android:background="#000">
-                         </View>
-                         <TextView
-                                 android:layout_marginBottom="2px"
-                                 android:layout_marginLeft="2px"
-                                 android:layout_marginRight="2px"
-                                 android:background="#DCDCDC"
-                                 android:textColor="#000"
-                                 android:textSize="18sp"
-                                 android:padding="16dp"
-                                 android:fontFamily="'Roboto',sans-serif"
-                                 android:layout_width="match_parent"
-                                 android:layout_height="wrap_content"
-                                 android:text="New Text"
-                                 android:id="@+id/info" />
-                     </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/order_style"
+                    android:orientation="vertical">
 
-                     <LinearLayout
-                             android:layout_marginTop="25dp"
-                             android:layout_gravity="center_horizontal"
-                             android:layout_width="wrap_content"
-                             android:layout_height="wrap_content"
-                             android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/object"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:padding="16dp"
+                        android:text="New Text"
+                        android:textColor="#000"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2px"
+                        android:background="#000"></View>
+
+                    <TextView
+                        android:id="@+id/info"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2px"
+                        android:layout_marginLeft="2px"
+                        android:layout_marginRight="2px"
+                        android:background="#DCDCDC"
+                        android:fontFamily="'Roboto',sans-serif"
+                        android:padding="16dp"
+                        android:text="New Text"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="25dp"
+                    android:orientation="vertical">
 
 
-                         <RelativeLayout
-                                 android:id="@+id/payment_layout"
-                                 android:paddingLeft="16dp"
-                                 android:orientation="horizontal"
-                                 android:layout_width="match_parent"
-                                 android:layout_height="40dp" android:layout_gravity="center_horizontal">
-                             <CheckBox
-                                     android:layout_marginLeft="5dp"
-                                     android:scaleX="2" android:scaleY="2"
-                                     android:layout_width="wrap_content"
-                                     android:layout_height="wrap_content" android:id="@+id/payment"
-                                     android:clickable="true" android:enabled="true"
-                                     android:layout_alignBaseline="@+id/payment_txt"
-                                     android:layout_alignBottom="@+id/payment_txt" android:layout_alignParentLeft="true"
-                                     android:layout_alignParentStart="true"/>
-                             <TextView
-                                     android:paddingLeft="8dp"
-                                     android:layout_width="wrap_content"
-                                     android:layout_height="wrap_content"
-                                     android:text="Оплачено"
-                                     android:id="@+id/payment_txt"
-                                     android:textSize="18sp"
-                                     android:textColor="#000"
-                                     android:layout_centerVertical="true" android:layout_toRightOf="@+id/payment"
-                                     android:layout_toEndOf="@+id/payment"/>
-                         </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/payment_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:paddingLeft="16dp">
 
-                         <RelativeLayout
-                                 android:id="@+id/arrived_layout"
-                                 android:paddingLeft="16dp"
-                                 android:orientation="horizontal"
-                                 android:layout_width="match_parent"
-                                 android:layout_height="40dp" android:layout_gravity="center_horizontal"
-                                 android:layout_marginTop="4dp">
-                             <CheckBox
-                                     android:layout_marginLeft="5dp"
-                                     android:scaleX="2"
-                                     android:scaleY="2"
-                                     android:layout_width="wrap_content"
-                                     android:layout_height="wrap_content"
-                                     android:id="@+id/arrived"
-                                     android:clickable="true"
-                                     android:enabled="true"
-                                     android:layout_alignBaseline="@+id/arrived_txt"
-                                     android:layout_alignBottom="@+id/arrived_txt" android:layout_alignParentLeft="true"
-                                     android:layout_alignParentStart="true"/>
-                             <TextView
-                                     android:paddingLeft="8dp"
-                                     android:layout_width="wrap_content"
-                                     android:layout_height="wrap_content"
-                                     android:text="Въехал/зашел"
-                                     android:id="@+id/arrived_txt"
-                                     android:textSize="18sp"
-                                     android:textColor="#000"
-                                     android:layout_centerVertical="true" android:layout_toRightOf="@+id/arrived"
-                                     android:layout_toEndOf="@+id/arrived"/>
-                         </RelativeLayout>
+                        <CheckBox
+                            android:id="@+id/payment"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBaseline="@+id/payment_txt"
+                            android:layout_alignBottom="@+id/payment_txt"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginLeft="5dp"
+                            android:clickable="true"
+                            android:enabled="true"
+                            android:scaleX="2"
+                            android:scaleY="2" />
 
-                     </LinearLayout>
-                     <Button
-                             android:layout_marginTop="25dp"
-                             android:layout_width="match_parent"
-                             android:layout_height="wrap_content"
-                             android:text="Отправить"
-                             android:id="@+id/complete"
-                             android:padding="16dp"
-                             android:layout_gravity="center_horizontal|bottom"
-                             android:background="@drawable/button_common" android:gravity="center_vertical|center_horizontal"/>
-                 </LinearLayout>
+                        <TextView
+                            android:id="@+id/payment_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/payment"
+                            android:layout_toRightOf="@+id/payment"
+                            android:paddingLeft="8dp"
+                            android:text="Оплачено"
+                            android:textColor="#000"
+                            android:textSize="18sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/arrived_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal"
+                        android:paddingLeft="16dp">
+
+                        <CheckBox
+                            android:id="@+id/arrived"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignBaseline="@+id/arrived_txt"
+                            android:layout_alignBottom="@+id/arrived_txt"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_marginLeft="5dp"
+                            android:clickable="true"
+                            android:enabled="true"
+                            android:scaleX="2"
+                            android:scaleY="2" />
+
+                        <TextView
+                            android:id="@+id/arrived_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toEndOf="@+id/arrived"
+                            android:layout_toRightOf="@+id/arrived"
+                            android:paddingLeft="8dp"
+                            android:text="Въехал/зашел"
+                            android:textColor="#000"
+                            android:textSize="18sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <Button
+                    android:layout_marginBottom="16dp"
+                    android:id="@+id/complete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/button_common"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:padding="16dp"
+                    android:text="Отправить" />
+            </LinearLayout>
 
 
         </ScrollView>
