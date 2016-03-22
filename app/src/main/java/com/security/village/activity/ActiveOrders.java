@@ -4,8 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -41,6 +47,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     private OrdersAdapter adapter;
     private ListView ordersList;
     private TextView hint;
+    private EditText searchBar;
     private ImageView rightButton;
     private ImageView addOrderButton;
     private SwipeRefreshLayout swipeLayout;
@@ -98,6 +105,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         rightButton = (ImageView) findViewById(R.id.right_button);
         hint = (TextView) findViewById(R.id.hint);
         addOrderButton = (ImageView) findViewById(R.id.add_order);
+        searchBar = (EditText) findViewById(R.id.search_bar_active);
 
         ordersList.setAdapter(adapter);
         ordersList.setOnScrollListener(onScroll);
@@ -127,6 +135,56 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                 ActiveOrders.this.startActivityForResult(intent, Keys.REFRESH);
             }
         });
+
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+
+                    hideKeyBoard();
+
+                    map.put("search", searchBar.getText().toString());
+                    refreshList();
+                    getOrders();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.length() > 2) {
+                    refreshList();
+                    map.put("search", searchBar.getText().toString());
+                    getOrders();
+                } else if (editable.length() == 0) {
+                    refreshList();
+                    map.remove("search");
+                    getOrders();
+                }
+            }
+        });
+    }
+
+    private void hideKeyBoard(){
+        try{
+            InputMethodManager inputMethodManager = (InputMethodManager)  ActiveOrders.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(ActiveOrders.this.getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void refreshList(){

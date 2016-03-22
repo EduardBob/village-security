@@ -198,24 +198,24 @@ public class LoginActivity extends Activity {
         if(!TextUtils.isEmpty(login1.getText()) && login1.getText().toString().length() == 3){
             loginString += login1.getText().toString()+")";
         }else{
-            toast("Вы не полность ввели номер телефона");
+            Toast.makeText(getApplicationContext(), "Вы не полность ввели номер телефона", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if(!TextUtils.isEmpty(login2.getText()) && login2.getText().toString().length() == 7){
             loginString += login2.getText().toString();
         }else{
-            toast("Вы не полность ввели номер телефона");
+            Toast.makeText(getApplicationContext(), "Вы не полность ввели номер телефона", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if(TextUtils.isEmpty(password.getText()) ){
-            toast("Вы не ввели пароль");
+            Toast.makeText(getApplicationContext(), "Вы не ввели пароль", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if(password.getText().toString().length() < 6){
-            toast("Пароль должен содержать не менее 6 символов");
+            Toast.makeText(getApplicationContext(), "Пароль должен содержать не менее 6 символов", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -224,10 +224,6 @@ public class LoginActivity extends Activity {
         map.put("password", password.getText().toString());
 
         return true;
-    }
-
-    public void toast(String str){
-        Toast.makeText(LoginActivity.this, str, Toast.LENGTH_SHORT).show();
     }
 
     private void setState(boolean state){
@@ -270,27 +266,22 @@ public class LoginActivity extends Activity {
                 swipeLayout.setRefreshing(false);
                 try {
                     if (error.getResponse().getStatus() >= 400 && error.getResponse().getStatus() < 500) {
-                        toast("Вы ввели неправильные данные");
+                        Toast.makeText(getApplicationContext(), "Вы ввели неправильные данные", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     if (error.getResponse().getStatus() >= 500) {
-                        toast("Приносим извинения, но на текущий момент ведутся технические работы");
+                        Toast.makeText(getApplicationContext(), "Приносим извинения, но на текущий момент ведутся технические работы", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    toast("Отсутствует соединение с интернетом");
+                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     swipeLayout.setRefreshing(false);
                     e.printStackTrace();
-                    toast("Отсутствует соединение с интернетом");
+                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_LONG).show();
                 }
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
 }
