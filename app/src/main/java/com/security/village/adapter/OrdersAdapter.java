@@ -19,6 +19,7 @@ import com.security.village.ObjectMap;
 import com.security.village.R;
 import com.security.village.settingsholder.AppSettingsProvider;
 import com.security.village.settingsholder.Keys;
+import com.security.village.webservice.retrofit.ApiNew;
 import com.security.village.webservice.retrofit.RestModuleNew;
 import com.security.village.webservice.retrofit.response.Orders;
 import com.squareup.picasso.Picasso;
@@ -117,7 +118,7 @@ public class OrdersAdapter extends ArrayAdapter {
         });
 
         if(order.getService().getData().getImage() != null && order.getService().getData().getImage().getFormats().getSmallThumb() != null){
-            Picasso.with(context).load("http://village.fruitware.ru" + order.getService().getData().getImage().getFormats().getSmallThumb()).into(holder.image);
+            Picasso.with(context).load(ApiNew.SERVER_URL + order.getService().getData().getImage().getFormats().getSmallThumb()).into(holder.image);
             holder.image.setVisibility(View.VISIBLE);
         } else {
             holder.image.setVisibility(View.GONE);
