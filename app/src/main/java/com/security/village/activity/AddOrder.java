@@ -16,16 +16,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.Toast;
+import android.widget.*;
 
 import com.security.village.DateTimePicker;
 import com.security.village.DateUtils;
@@ -64,6 +55,7 @@ public class AddOrder extends Activity implements View.OnTouchListener{
     private EditText from;
     private EditText to;
     private CheckBox rights;
+    private TextView rightsTxt;
     private Button complete;
     private ImageView arrowLeft;
     private RelativeLayout mainLayout;
@@ -125,6 +117,7 @@ public class AddOrder extends Activity implements View.OnTouchListener{
         from = (EditText) findViewById(R.id.from);
         to = (EditText) findViewById(R.id.to);
         rights = (CheckBox) findViewById(R.id.rights);
+        rightsTxt = (TextView) findViewById(R.id.rights_txt);
         complete = (Button) findViewById(R.id.complete);
         arrowLeft = (ImageView) findViewById(R.id.left_button);
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
@@ -149,12 +142,12 @@ public class AddOrder extends Activity implements View.OnTouchListener{
 
         complete.setEnabled(false);
 
-        if(Integer.parseInt(AppSettingsProvider.getInstance().getSdkVersion(AddOrder.this)) <= 10 ){
-            rights.setPadding(rights.getPaddingLeft() + 26,
-                    rights.getPaddingTop(),
-                    rights.getPaddingRight(),
-                    rights.getPaddingBottom());
-        }
+//        if(Integer.parseInt(AppSettingsProvider.getInstance().getSdkVersion(AddOrder.this)) <= 10 ){
+//            rights.setPadding(rights.getPaddingLeft() + 26,
+//                    rights.getPaddingTop(),
+//                    rights.getPaddingRight(),
+//                    rights.getPaddingBottom());
+//        }
 
 
 
@@ -194,10 +187,11 @@ public class AddOrder extends Activity implements View.OnTouchListener{
                 if (!TextUtils.isEmpty(pickedDate.getText()) && pickedDate.getText().toString().length() == 10)
                     pickedTime.requestFocus();
                 if (!TextUtils.isEmpty(pickedDate.getText()) && !TextUtils.isEmpty(to.getText()) && !TextUtils.isEmpty(from.getText()) && rights.isChecked()) {
-                    map.put("perform_date", pickedDate.getText().toString());
+                    map.put("perform_date",
+                            DateUtils.formatDate(pickedDate.getText().toString(), DateUtils.DATE_FORMAT_22, DateUtils.DATE_FORMAT_7));
                     complete.setEnabled(true);
                 } else {
-                    map.put("perform_date", pickedDate.getText().toString() + "");
+                    map.put("perform_date", DateUtils.formatDate(pickedDate.getText().toString(), DateUtils.DATE_FORMAT_22, DateUtils.DATE_FORMAT_7) + "");
                     complete.setEnabled(false);
                 }
             }
@@ -275,6 +269,23 @@ public class AddOrder extends Activity implements View.OnTouchListener{
             }
         });
 
+        rightsTxt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (rights.isChecked()) {
+                    rights.setChecked(false);
+                } else {
+                    rights.setChecked(true);
+                }
+
+                if (!TextUtils.isEmpty(pickedDate.getText()) && !TextUtils.isEmpty(to.getText()) && !TextUtils.isEmpty(from.getText()) && rights.isChecked()) {
+                    complete.setEnabled(true);
+                } else {
+                    complete.setEnabled(false);
+                }
+            }
+        });
+
         complete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -325,9 +336,9 @@ public class AddOrder extends Activity implements View.OnTouchListener{
                 (calendar.get(Calendar.MONTH) + 1),
                 calendar.get(Calendar.DAY_OF_MONTH),
                 calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE),0), DateUtils.DATE_FORMAT_5);
+                calendar.get(Calendar.MINUTE), 0), DateUtils.DATE_FORMAT_5);
 
-        String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_7);
+        String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_22);
         String time = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_14);
         pickedDate.setText(date);
         pickedTime.setText(time);
@@ -440,12 +451,13 @@ public class AddOrder extends Activity implements View.OnTouchListener{
                         return;
                     }
 
-                String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_7);
+                String date = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_22);
+                String date2 = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_7);
                 String time = DateUtils.formatDate(selectedDateTime, DateUtils.DATE_FORMAT_5, DateUtils.DATE_FORMAT_14);
                 pickedDate.setText(date);
                 pickedTime.setText(time);
 
-                map.put("perform_date", date);
+                map.put("perform_date", date2);
                 map.put("perform_time",time);
 
                 mDateTimeDialog.dismiss();

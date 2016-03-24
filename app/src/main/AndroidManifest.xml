@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
-        <activity android:name=".activity.LoginActivity">
+        <activity android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,10 +19,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.ActiveOrders"/>
-        <activity android:name=".activity.OneOrder"/>
-        <activity android:name=".activity.AddOrder"/>
-        <activity android:name=".activity.AllOrders"/>
+        <activity android:name=".activity.ActiveOrders"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activity.OneOrder"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.AddOrder"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.AllOrders"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity android:name=".activity.MyProfile"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

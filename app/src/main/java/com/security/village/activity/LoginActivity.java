@@ -4,23 +4,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.security.village.ObjectMap;
 import com.security.village.R;
 import com.security.village.settingsholder.AppSettingsProvider;
-import com.security.village.settingsholder.Keys;
 import com.security.village.settingsholder.LocalSettingsProvider;
 import com.security.village.webservice.retrofit.ApiNew;
 import com.security.village.webservice.retrofit.RestModuleNew;
@@ -62,7 +58,6 @@ public class LoginActivity extends Activity {
         AppSettingsProvider.getInstance().setSdkVersion(LoginActivity.this, Build.VERSION.SDK);
 
         initializeAllViews();
-        swipeLayout.setRefreshing(true);
         isLoggedIn();
     }
 
@@ -71,14 +66,21 @@ public class LoginActivity extends Activity {
         setState(false);
         String loginString = settingsHolder.getLogin(LoginActivity.this);
         String password = settingsHolder.getPassword(LoginActivity.this);
-        if(loginString != null && password != null){
-            map.put("phone", loginString);
-            map.put("password", password);
-            login();
-        }else{
-            setState(true);
-            swipeLayout.setRefreshing(false);
-        }
+       try{
+           if(loginString != null && password != null){
+               map.put("phone", loginString);
+               map.put("password", password);
+               swipeLayout.setRefreshing(true);
+               login();
+           }else{
+               setState(true);
+               swipeLayout.setRefreshing(false);
+           }
+       } catch (Exception e){
+           e.printStackTrace();
+           setState(true);
+           swipeLayout.setRefreshing(false);
+       }
     }
 
     private void initializeAllViews(){
@@ -104,6 +106,9 @@ public class LoginActivity extends Activity {
                     swipeLayout.setRefreshing(true);
                     setState(false);
                     login();
+                } else {
+                    swipeLayout.setRefreshing(false);
+                    setState(true);
                 }
             }
         });
@@ -178,10 +183,10 @@ public class LoginActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                if((TextUtils.isEmpty(login1.getText()) || login1.getText().toString().length() == 3) && TextUtils.isEmpty(login2.getText())){
+                if ((TextUtils.isEmpty(login1.getText()) || login1.getText().toString().length() == 3) && TextUtils.isEmpty(login2.getText())) {
                     login1.requestFocus();
                 }
-                if (s.length() == 7){
+                if (s.length() == 7) {
                     password.requestFocus();
                 }
             }
@@ -193,24 +198,24 @@ public class LoginActivity extends Activity {
         if(!TextUtils.isEmpty(login1.getText()) && login1.getText().toString().length() == 3){
             loginString += login1.getText().toString()+")";
         }else{
-            toast("Вы не полность ввели номер телефона");
+            Toast.makeText(getApplicationContext(), "Вы не полность ввели номер телефона", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if(!TextUtils.isEmpty(login2.getText()) && login2.getText().toString().length() == 7){
             loginString += login2.getText().toString();
         }else{
-            toast("Вы не полность ввели номер телефона");
+            Toast.makeText(getApplicationContext(), "Вы не полность ввели номер телефона", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if(TextUtils.isEmpty(password.getText()) ){
-            toast("Вы не ввели пароль");
+            Toast.makeText(getApplicationContext(), "Вы не ввели пароль", Toast.LENGTH_LONG).show();
             return false;
         }
 
         if(password.getText().toString().length() < 6){
-            toast("Пароль должен содержать не менее 6 символов");
+            Toast.makeText(getApplicationContext(), "Пароль должен содержать не менее 6 символов", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -221,15 +226,20 @@ public class LoginActivity extends Activity {
         return true;
     }
 
-    public void toast(String str){
-        Toast.makeText(LoginActivity.this, str, Toast.LENGTH_SHORT).show();
-    }
-
     private void setState(boolean state){
         login1.setEnabled(state);
         login2.setEnabled(state);
         password.setEnabled(state);
         buttonLogin.setEnabled(state);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(AppSettingsProvider.getInstance().getToken(getApplicationContext()).equalsIgnoreCase("")){
+            finish();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void login(){
@@ -241,6 +251,7 @@ public class LoginActivity extends Activity {
                     settingsHolder.saveToken(LoginActivity.this, "Bearer  " + ObjectMap.getInstance().readValue(s, Token.class).getToken());
                     settingsHolder.saveLogin(LoginActivity.this, map.get("phone"));
                     settingsHolder.savePassword(LoginActivity.this, map.get("password"));
+                    swipeLayout.setRefreshing(false);
                     Intent intent = new Intent(LoginActivity.this, ActiveOrders.class);
                     startActivity(intent);
                 } catch (IOException e) {
@@ -255,26 +266,22 @@ public class LoginActivity extends Activity {
                 swipeLayout.setRefreshing(false);
                 try {
                     if (error.getResponse().getStatus() >= 400 && error.getResponse().getStatus() < 500) {
-                        toast("Вы ввели неправильные данные");
+                        Toast.makeText(getApplicationContext(), "Вы ввели неправильные данные", Toast.LENGTH_LONG).show();
                         return;
                     }
 
                     if (error.getResponse().getStatus() >= 500) {
-                        toast("Приносим извинения, но на текущий момент ведутся технические работы");
+                        Toast.makeText(getApplicationContext(), "Приносим извинения, но на текущий момент ведутся технические работы", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    toast("Отсутствует соединение с интернетом");
+                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
+                    swipeLayout.setRefreshing(false);
                     e.printStackTrace();
-                    toast("Отсутствует соединение с интернетом");
+                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_LONG).show();
                 }
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
 }

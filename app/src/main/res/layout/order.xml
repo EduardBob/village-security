@@ -13,6 +13,8 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp">
         <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/top"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -105,6 +107,7 @@
             android:paddingLeft="10dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
+            android:visibility="gone"
             android:id="@+id/check_box_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
