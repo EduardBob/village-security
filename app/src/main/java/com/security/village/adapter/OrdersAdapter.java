@@ -1,10 +1,7 @@
 package com.security.village.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,25 +11,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.security.village.ObjectMap;
 import com.security.village.R;
-import com.security.village.settingsholder.AppSettingsProvider;
 import com.security.village.settingsholder.Keys;
 import com.security.village.webservice.retrofit.ApiNew;
-import com.security.village.webservice.retrofit.RestModuleNew;
 import com.security.village.webservice.retrofit.response.Orders;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 /**
  * Created by fruitware on 12/24/15.
@@ -56,11 +42,7 @@ public class OrdersAdapter extends ArrayAdapter {
         this.allOrders = allOrders;
     }
 
-    public interface OnOrderClickListener{
-        void onOrderClickListener(int id, Class clasS);
-    }
-
-    public void setListOfData(List<Orders.Data> list){
+    public void setListOfData(List<Orders.Data> list) {
         mOrdersList = list;
     }
 
@@ -68,7 +50,7 @@ public class OrdersAdapter extends ArrayAdapter {
         this.clasS = clasS;
     }
 
-    public void setListener(OnOrderClickListener listener){
+    public void setListener(OnOrderClickListener listener) {
         mOnOrderClickListener = listener;
     }
 
@@ -91,7 +73,7 @@ public class OrdersAdapter extends ArrayAdapter {
         ViewHolder holder = null;
         final Orders.Data order = getItem(pos);
 
-        if (convertView == null){
+        if (convertView == null) {
             convertView = LayoutInflater.from(context)
                     .inflate(R.layout.order, parent, false);
             holder = new ViewHolder(convertView);
@@ -105,7 +87,7 @@ public class OrdersAdapter extends ArrayAdapter {
         holder.whoBooked.setEllipsize(TextUtils.TruncateAt.END);
         holder.whoComing.setText(order.getComment());
 
-        if(order.getAdded_from() == null || order.getAdded_from().equalsIgnoreCase("")){
+        if (order.getAdded_from() == null || order.getAdded_from().equalsIgnoreCase("")) {
             holder.whoBooked.setText(order.getUser().getData().getFirst_name().trim() + " " + order.getUser().getData().getLast_name().trim());
         } else {
             holder.whoBooked.setText(order.getAdded_from());
@@ -118,7 +100,7 @@ public class OrdersAdapter extends ArrayAdapter {
             }
         });
 
-        if(order.getService().getData().getImage() != null && order.getService().getData().getImage().getFormats().getSmallThumb() != null){
+        if (order.getService().getData().getImage() != null && order.getService().getData().getImage().getFormats().getSmallThumb() != null) {
             Picasso.with(context).load(ApiNew.SERVER_URL + order.getService().getData().getImage().getFormats().getSmallThumb()).into(holder.image);
             holder.image.setVisibility(View.VISIBLE);
         } else {
@@ -126,14 +108,14 @@ public class OrdersAdapter extends ArrayAdapter {
         }
 
 
-        if(allOrders){
-            if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)){
+        if (allOrders) {
+            if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
                 holder.payment.setChecked(true);
             } else {
                 holder.payment.setChecked(false);
             }
-            if(order.getPayment_type().equalsIgnoreCase("card")){
-                if(order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
+            if (order.getPayment_type().equalsIgnoreCase("card")) {
+                if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
                     holder.payment.setText("Оплата on-line");
                     holder.payment.setChecked(true);
                 } else {
@@ -143,25 +125,25 @@ public class OrdersAdapter extends ArrayAdapter {
                 holder.payment.setText("Заказ оплачен");
             }
 
-            if (Float.parseFloat(order.getPrice()) == 0){
+            if (Float.parseFloat(order.getPrice()) == 0) {
                 holder.price.setText("Бесплатно");
                 holder.payment.setVisibility(View.GONE);
-            }else{
-                holder.price.setText(order.getPrice().substring(0,order.getPrice().indexOf(".")) + " рублей");
+            } else {
+                holder.price.setText(order.getPrice().substring(0, order.getPrice().indexOf(".")) + " рублей");
                 holder.payment.setVisibility(View.VISIBLE);
             }
 
-            if (order.getStatus().equalsIgnoreCase(Keys.DONE)){
+            if (order.getStatus().equalsIgnoreCase(Keys.DONE)) {
                 holder.arrived.setChecked(true);
             } else {
                 holder.arrived.setChecked(false);
             }
-        }else{
+        } else {
             holder.checkBoxContainer.setVisibility(View.GONE);
             holder.price.setVisibility(View.GONE);
         }
 
-        switch (style){
+        switch (style) {
             case ALL:
                 holder.checkBoxContainer.setVisibility(View.VISIBLE);
                 holder.top.setVisibility(View.VISIBLE);
@@ -176,6 +158,10 @@ public class OrdersAdapter extends ArrayAdapter {
         return convertView;
     }
 
+    public interface OnOrderClickListener {
+        void onOrderClickListener(int id, Class clasS);
+    }
+
     public static class ViewHolder {
         public LinearLayout view;
         public TextView whoBooked;
@@ -187,17 +173,18 @@ public class OrdersAdapter extends ArrayAdapter {
         public LinearLayout checkBoxContainer;
         public RelativeLayout top;
         public ImageView image;
-            public ViewHolder(View view){
-                this.view = (LinearLayout) view.findViewById(R.id.order);
-                whoBooked = (TextView) view.findViewById(R.id.name_who_booked);
-                whoComing = (TextView) view.findViewById(R.id.name_who_coming);
-                price = (TextView) view.findViewById(R.id.price);
-                id = (TextView) view.findViewById(R.id.id);
-                payment = (CheckBox) view.findViewById(R.id.payment);
-                arrived = (CheckBox) view.findViewById(R.id.arrived);
-                checkBoxContainer = (LinearLayout) view.findViewById(R.id.check_box_container);
-                top = (RelativeLayout) view.findViewById(R.id.top);
-                image = (ImageView) view.findViewById(R.id.image);
-            }
+
+        public ViewHolder(View view) {
+            this.view = (LinearLayout) view.findViewById(R.id.order);
+            whoBooked = (TextView) view.findViewById(R.id.name_who_booked);
+            whoComing = (TextView) view.findViewById(R.id.name_who_coming);
+            price = (TextView) view.findViewById(R.id.price);
+            id = (TextView) view.findViewById(R.id.id);
+            payment = (CheckBox) view.findViewById(R.id.payment);
+            arrived = (CheckBox) view.findViewById(R.id.arrived);
+            checkBoxContainer = (LinearLayout) view.findViewById(R.id.check_box_container);
+            top = (RelativeLayout) view.findViewById(R.id.top);
+            image = (ImageView) view.findViewById(R.id.image);
+        }
     }
 }

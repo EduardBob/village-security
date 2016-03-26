@@ -17,7 +17,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "com.security.village"
+        applicationId "ru.privratnik.app"
         minSdkVersion 10
         targetSdkVersion 23
         versionCode 1
