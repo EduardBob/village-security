@@ -46,6 +46,8 @@ public class OneOrder extends Activity {
     private TextView object;
     private TextView info;
     private TextView paymentTxt;
+    private TextView phone;
+    private TextView phoneLabel;
     private RelativeLayout arrivedLayout;
     private RelativeLayout paymentLayout;
     private CheckBox payment;
@@ -53,6 +55,8 @@ public class OneOrder extends Activity {
     private Button complete;
     private LinearLayout mainLayout;
     private SwipeRefreshLayout swipeLayout;
+
+    private EditText comment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +80,8 @@ public class OneOrder extends Activity {
         dateTimeLabel = (TextView) findViewById(R.id.date_time_label);
         object = (TextView) findViewById(R.id.object);
         info = (TextView) findViewById(R.id.info);
+        phone = (TextView) findViewById(R.id.phone);
+        phoneLabel = (TextView) findViewById(R.id.textViews);
         payment = (CheckBox) findViewById(R.id.payment);
         paymentTxt = (TextView) findViewById(R.id.payment_txt);
         arrived = (CheckBox) findViewById(R.id.arrived);
@@ -94,6 +100,8 @@ public class OneOrder extends Activity {
                 return false;
             }
         });
+
+        comment = (EditText) findViewById(R.id.comment);
 
         swipeLayout.setEnabled(false);
 
@@ -184,14 +192,17 @@ public class OneOrder extends Activity {
     }
 
     public void sendRequest(){
+        if(comment.getText().length() > 0){
+            map.put("admin_comment", comment.getText().toString());
+        }
         RestModuleNew.provideRestService().patch(UPDATE_ORDER + orderId, AppSettingsProvider.getInstance().getToken(OneOrder.this), map, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
                 swipeLayout.setRefreshing(false);
                 try {
                     Intent intent = new Intent(OneOrder.this, Class.forName(classParent));
-                    intent.putExtra(Keys.REFRESH_DATE, performDate+"");
-                    intent.putExtra(Keys.ORDER_ID, orderId+"");
+                    intent.putExtra(Keys.REFRESH_DATE, performDate + "");
+                    intent.putExtra(Keys.ORDER_ID, orderId + "");
                     intent.putExtra(Keys.PAYMENT_STATUS, map.get("payment_status"));
                     intent.putExtra(Keys.STATUS, map.get("status"));
                     setResult(Keys.REFRESH, intent);
@@ -265,6 +276,7 @@ public class OneOrder extends Activity {
             arrived.setEnabled(false);
             arrivedLayout.setEnabled(false);
             paymentLayout.setEnabled(false);
+            comment.setEnabled(false);
         }
 
         String dateTime = "";
@@ -290,6 +302,18 @@ public class OneOrder extends Activity {
         }
         service.setText(order.getService().getData().getTitle());
         object.setText(order.getComment());
+
+        if (order.getAdmin_comment() != null){
+            comment.setText(order.getAdmin_comment());
+        }
+
+        if(order.getPhone() != null){
+            phone.setText(order.getPhone());
+        } else {
+            phone.setVisibility(View.GONE);
+            phoneLabel.setVisibility(View.GONE);
+        }
+
         mainLayout.setVisibility(View.VISIBLE);
         swipeLayout.setRefreshing(false);
     }

@@ -16,6 +16,7 @@ public class Keys {
     public static final String DONE = "done";
     public static final String REFRESH_CLASS = "refresh_class_passed";
     public static final String REFRESH_DATE = "refresh_date_passed";
+    public static final String REFRESH_TIME_SEC = "REFRESH_TIME_SEC_sec_mm";
     public static final int REFRESH = 0xff00;
     public static final int DATE_THAT_DOESNT_EXIST = 0x99999999;
 }

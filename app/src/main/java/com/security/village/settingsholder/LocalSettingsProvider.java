@@ -18,4 +18,7 @@ public interface LocalSettingsProvider {
 
     void setSdkVersion(Context context, String number);
     String getSdkVersion(Context context);
+
+    void saveRefreshListTime(Context context, int number);
+    int getRefreshListTime(Context context);
 }

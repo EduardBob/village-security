@@ -3,9 +3,11 @@ package com.security.village.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -28,6 +30,7 @@ import com.security.village.webservice.retrofit.RestModuleNew;
 import com.security.village.webservice.retrofit.response.Orders;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -40,7 +43,7 @@ import retrofit.client.Response;
 /**
  * Created by fruitware on 12/23/15.
  */
-public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClickListener, SwipeRefreshLayout.OnRefreshListener{
+public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ACTIVE_ORDERS = "api/v1/security/services/orders";
 
@@ -55,29 +58,54 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
 
     private HashMap<String, String> map;
     private List<Orders.Data> list;
+    private List<Orders.Data> list2;
     private int PAGE = 1;
+    private int LAST_PAGE = 0;
     private boolean isLastPageEmpty = false;
+    private boolean isListOne = false;
     private int recentDay;
     private int recentMonth;
     private int recentYear;
 
     private FrameLayout myProfileButton;
 
+    private Handler handler;
+    private Runnable refreshList;
+    private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            if (scrollState == SCROLL_STATE_IDLE) {
+                if (isLastPageEmpty) {
+                    return;
+                }
+                PAGE++;
+                getOrders(PAGE);
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.active_orders);
         map = new HashMap<>();
+        handler = new Handler();
         my_profile_button = (FrameLayout) findViewById(R.id.my_profile_button);
         map.put("status", "processing");
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
+        list2 = new ArrayList<>();
         adapter = new OrdersAdapter(this, 0, false, OrdersAdapter.CUT);
         adapter.setActivityClass(ActiveOrders.class);
         adapter.setListener(this);
 
         recentDay += Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        recentMonth += Calendar.getInstance().get(Calendar.MONTH)+1;
+        recentMonth += Calendar.getInstance().get(Calendar.MONTH) + 1;
         recentYear += Calendar.getInstance().get(Calendar.YEAR);
 
         map.put("from_perform_date", Integer.toString(recentYear) + "-" + Integer.toString(recentMonth) + "-" + Integer.toString(recentDay));
@@ -91,15 +119,42 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         });
 
         initializeViews();
-        getOrders();
+        getOrders(PAGE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshList = new Runnable() {
+            @Override
+            public void run() {
+                getOrders(0);
+                Log.w("REFRESH_ACTIVE", Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
+                handler.postDelayed(this, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
+            }
+        };
+
+        handler.postDelayed(refreshList, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(refreshList);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(refreshList);
     }
 
     @Override
     public void onRefresh() {
-            refreshList();
+        refreshList();
     }
 
-    private void initializeViews(){
+    private void initializeViews() {
         myProfileButton = (FrameLayout) findViewById(R.id.my_profile_button);
         ordersList = (ListView) findViewById(R.id.active_orders_list);
         rightButton = (ImageView) findViewById(R.id.right_button);
@@ -145,7 +200,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
 
                     map.put("search", searchBar.getText().toString());
                     refreshList();
-                    getOrders();
+//                    getOrders(PAGE);
                     return true;
                 }
                 return false;
@@ -168,74 +223,72 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                 if (editable.length() > 2) {
                     refreshList();
                     map.put("search", searchBar.getText().toString());
-                    getOrders();
+                    getOrders(PAGE);
                 } else if (editable.length() == 0) {
                     refreshList();
                     map.remove("search");
-                    getOrders();
+                    getOrders(PAGE);
                 }
             }
         });
     }
 
-    private void hideKeyBoard(){
-        try{
-            InputMethodManager inputMethodManager = (InputMethodManager)  ActiveOrders.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    private void hideKeyBoard() {
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) ActiveOrders.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(ActiveOrders.this.getCurrentFocus().getWindowToken(), 0);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void refreshList(){
+    private void refreshList() {
         swipeLayout.setRefreshing(true);
         list.clear();
         adapter.notifyDataSetChanged();
         PAGE = 1;
         isLastPageEmpty = false;
-        map.put("page", Integer.toString(PAGE));
-        getOrders();
+        getOrders(PAGE);
     }
 
-    private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
+    private void getOrders(final int PAGE) {
 
-            if (scrollState == SCROLL_STATE_IDLE) {
-                if (isLastPageEmpty) {
-                    return;
-                }
-                PAGE++;
+            if(list.size() >= 10 && PAGE == 0){
+                map.put("page","1");
+                map.put("limit", Integer.toString(list.size()));
+            } else {
                 map.put("page", Integer.toString(PAGE));
-                getOrders();
+                map.remove("limit");
             }
-        }
 
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        }
-    };
-
-    private void getOrders(){
-        RestModuleNew.provideRestService().getAuth(ACTIVE_ORDERS, AppSettingsProvider.getInstance().getToken(ActiveOrders.this), map, new Callback<String>() {
-            @Override
-            public void success(String s, Response response) {
-                try {
-                    Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
-                    visualizeOrders(orders);
-                } catch (IOException e) {
-                    swipeLayout.setRefreshing(false);
-                    e.printStackTrace();
+            RestModuleNew.provideRestService().getAuth(ACTIVE_ORDERS, AppSettingsProvider.getInstance().getToken(ActiveOrders.this), map, new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                    try {
+                        Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
+                        if(PAGE == 0){
+                            list.clear();
+                            for(Orders.Data x : orders.getData()){
+                                list.add(x);
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            visualizeOrders(orders);
+                        }
+                    } catch (IOException e) {
+                        swipeLayout.setRefreshing(false);
+                        e.printStackTrace();
+                    }
                 }
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                swipeLayout.setRefreshing(false);
-                toast(HttpErrorHandler.handleError(error), AppSettingsProvider.getInstance().getToken(ActiveOrders.this));
-            }
-        });
-    }
+                @Override
+                public void failure(RetrofitError error) {
+                    swipeLayout.setRefreshing(false);
+                    toast(HttpErrorHandler.handleError(error), AppSettingsProvider.getInstance().getToken(ActiveOrders.this));
+                }
+            });
+        }
+
 
     public void visualizeOrders(Orders orders){
         List<Orders.Data> listTmp = new ArrayList<>();
@@ -260,12 +313,12 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         swipeLayout.setRefreshing(false);
     }
 
-    public void toast(String str, String token){
+    public void toast(String str, String token) {
         if (str != null) {
-            if(str.equalsIgnoreCase("token_invalid")){
+            if (str.equalsIgnoreCase("token_invalid")) {
                 RestModuleNew.refreshToken(ActiveOrders.this, token);
                 return;
-            }else
+            } else
                 Toast.makeText(ActiveOrders.this, str, Toast.LENGTH_SHORT).show();
         }
     }
@@ -282,7 +335,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Keys.REFRESH || requestCode == Keys.REFRESH){
+        if (resultCode == Keys.REFRESH || requestCode == Keys.REFRESH) {
             refreshList();
         }
     }

@@ -39,6 +39,32 @@ public class SharedPreferencesSettingsProvider implements LocalSettingsProvider 
         return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE).getString(key, defaultValue);
     }
 
+    /**
+     * Add string value to application shared preferences
+     *
+     * @param context Current application context
+     * @param key     Preference key
+     * @param value   int value
+     */
+    public static void addIntegerToPreferences(Context context, String key, int value) {
+        SharedPreferences settings = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    /**
+     * Get string value from application shared preferences
+     *
+     * @param context      Current application context
+     * @param key          Preference key
+     * @param defaultValue Default int value
+     * @return Appropriate string value
+     */
+    public static int getIntegerFromPreferences(Context context, String key, int defaultValue) {
+        return context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE).getInt(key, defaultValue);
+    }
+
     @Override
     public void saveToken(Context context, String token) {
         addStringToPreferences(context, Keys.TOKEN, token);
@@ -77,5 +103,15 @@ public class SharedPreferencesSettingsProvider implements LocalSettingsProvider 
     @Override
     public String getSdkVersion(Context context) {
         return getStringFromPreferences(context, Keys.SDK_VERSION, null);
+    }
+
+    @Override
+    public void saveRefreshListTime(Context context, int number) {
+        addIntegerToPreferences(context, Keys.REFRESH_TIME_SEC, number);
+    }
+
+    @Override
+    public int getRefreshListTime(Context context) {
+        return getIntegerFromPreferences(context, Keys.REFRESH_TIME_SEC, 5);
     }
 }

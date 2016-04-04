@@ -65,6 +65,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     private HashMap<String, String> map;
     private List<Orders.Data> list;
     private int PAGE = 1;
+    private int LAST_PAGE = 0;
     private boolean isLastPageEmpty = false;
     private float initialY;
     private int recentDay;
@@ -74,10 +75,14 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     private String lastMonth;
     private String lastYear;
 
+    private Handler handler;
+    private Runnable refreshList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_orders);
+        handler = new Handler();
         map = new HashMap<>();
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
@@ -92,7 +97,8 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
 
         initializeViews();
         changeDate(Keys.DATE_THAT_DOESNT_EXIST);
-        getOrders();
+        getOrders(PAGE);
+
     }
 
     @Override
@@ -159,8 +165,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                     hideKeyBoard();
 
                     map.put("search", searchBar.getText().toString());
-                    refreshList();
-                    getOrders();
+                    getOrders(PAGE);
                     return true;
                 }
                 return false;
@@ -183,11 +188,11 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                 if (editable.length() > 2) {
                     refreshList();
                     map.put("search", searchBar.getText().toString());
-                    getOrders();
+                    getOrders(PAGE);
                 } else if (editable.length() == 0) {
                     refreshList();
                     map.remove("search");
-                    getOrders();
+                    getOrders(PAGE);
                 }
             }
         });
@@ -230,8 +235,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         adapter.notifyDataSetChanged();
         PAGE = 1;
         isLastPageEmpty = false;
-        map.put("page", Integer.toString(PAGE));
-        getOrders();
+        getOrders(PAGE);
     }
 
     private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
@@ -243,8 +247,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                     return;
                 }
                 PAGE++;
-                map.put("page", Integer.toString(PAGE));
-                getOrders();
+                getOrders(PAGE);
             }
         }
 
@@ -253,39 +256,77 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         }
     };
 
-    private void getOrders(){
-        list.clear();
-        RestModuleNew.provideRestService().getAuth(ALL_ORDERS, AppSettingsProvider.getInstance().getToken(AllOrders.this), map, new Callback<String>() {
-            @Override
-            public void success(String s, Response response) {
-                swipeLayout.setRefreshing(false);
-                try {
-                    Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
-                    visualizeOrders(orders);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+    private void getOrders(final int PAGE){
+        if(list.size() >= 10 && PAGE == 0){
+            map.put("page","1");
+            map.put("limit", Integer.toString(list.size()));
+        } else {
+            map.put("page", Integer.toString(PAGE));
+        }
+            RestModuleNew.provideRestService().getAuth(ALL_ORDERS, AppSettingsProvider.getInstance().getToken(AllOrders.this), map, new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                    swipeLayout.setRefreshing(false);
+                    try {
+                        Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
+                        if(PAGE == 0){
+                            list.clear();
+                            for(Orders.Data x : orders.getData()){
+                                list.add(x);
+                            }
+                            adapter.notifyDataSetChanged();
+                        } else {
+                            visualizeOrders(orders);
+                        }
 
-            @Override
-            public void failure(RetrofitError error) {
-                swipeLayout.setRefreshing(false);
-                toast(HttpErrorHandler.handleError(error));
-            }
-        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    swipeLayout.setRefreshing(false);
+                    toast(HttpErrorHandler.handleError(error));
+                }
+            });
+
     }
 
-    public void visualizeOrders(Orders orders){
+    @Override
+    protected void onResume() {
+        super.onResume();
+        refreshList = new Runnable() {
+            @Override
+            public void run() {
+                getOrders(0);
+                Log.w("REFRESH", Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
+                handler.postDelayed(this, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
+            }
+        };
+
+        handler.postDelayed(refreshList, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(refreshList);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(refreshList);
+    }
+
+    public void visualizeOrders(Orders orders) {
         List<Orders.Data> listTmp = new ArrayList<>();
-        list.clear();
         for(Orders.Data x : orders.getData()){
                 list.add(x);
                 listTmp.add(x);
         }
 
-        if(listTmp.size() < 10){
-            isLastPageEmpty = true;
-        }
 
         if(list.size() != 0){
             hint.setVisibility(View.GONE);

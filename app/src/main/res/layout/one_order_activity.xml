@@ -90,6 +90,29 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:visibility="visible"
+                    android:id="@+id/textViews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="Телефон:"
+                    android:textColor="@color/new_grey1"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:visibility="visible"
+                    android:id="@+id/phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:text="New Text"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
                     android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -168,6 +191,25 @@
                         android:textColor="#000"
                         android:textSize="18sp" />
                 </LinearLayout>
+
+                <EditText
+                    android:maxLength="255"
+                    android:layout_marginTop="12dp"
+                    android:paddingLeft="16dp"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:fontFamily="'Roboto',sans-serif"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Комментарий"
+                    android:id="@+id/comment"
+                    android:background="#fff"/>
+
+                <View android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:background="#000"
+                    android:layout_marginBottom="8dp"></View>
+
 
                 <LinearLayout
                     android:layout_width="wrap_content"

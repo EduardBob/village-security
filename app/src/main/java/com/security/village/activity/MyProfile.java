@@ -3,8 +3,11 @@ package com.security.village.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,10 +16,13 @@ import com.security.village.HttpErrorHandler;
 import com.security.village.ObjectMap;
 import com.security.village.R;
 import com.security.village.settingsholder.AppSettingsProvider;
+import com.security.village.settingsholder.Keys;
 import com.security.village.webservice.retrofit.RestModuleNew;
 import com.security.village.webservice.retrofit.response.Profile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -33,18 +39,24 @@ public class MyProfile extends Activity {
     private TextView phone;
     private TextView country;
     private TextView logOut;
+    private EditText refreshTime;
     private ImageView back;
+
+    public static final ArrayList<String> numbers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_profile);
 
+        numbers.addAll(Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+
         back = (ImageView) findViewById(R.id.left_button);
         name = (TextView) findViewById(R.id.name);
         phone = (TextView) findViewById(R.id.phone);
         country = (TextView) findViewById(R.id.poselok);
         logOut = (TextView) findViewById(R.id.log_out);
+        refreshTime = (EditText) findViewById(R.id.refresh_time_sec);
 
 
         logOut.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +75,40 @@ public class MyProfile extends Activity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+        refreshTime.setText(Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
+
+        refreshTime.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() == 0){
+                    AppSettingsProvider.getInstance().saveRefreshListTime(getApplicationContext(), 5);
+                } else {
+                    int check = 0;
+                    for(char x : s.toString().toCharArray()){
+                        if(!numbers.contains(String.valueOf(x))){
+                            Toast.makeText(getApplicationContext(), "Пожалуйста, вводите только цифры", Toast.LENGTH_SHORT).show();
+                            check++;
+                            break;
+                        }
+                    }
+
+                    if(check == 0){
+                        AppSettingsProvider.getInstance().saveRefreshListTime(getApplicationContext(), Integer.parseInt(s.toString()));
+                    }
+                }
             }
         });
 

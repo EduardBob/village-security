@@ -65,11 +65,21 @@ public class Orders implements Serializable {
         private String status;
         private String payment_status;
         private String added_from;
+        private String phone;
+        private String admin_comment;
         private String comment;
         private Service service;
         private User user;
 
         public Data(){}
+
+        public String getAdmin_comment() {
+            return admin_comment;
+        }
+
+        public String getPhone() {
+            return phone;
+        }
 
         public User getUser() {
             return user;
@@ -113,6 +123,14 @@ public class Orders implements Serializable {
 
         public String getPrice() {
             return price;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
+        public void setAdmin_comment(String admin_comment) {
+            this.admin_comment = admin_comment;
         }
 
         public void setPrice(String price) {

@@ -54,6 +54,7 @@ public class AddOrder extends Activity implements View.OnTouchListener{
     private EditText pickedTime;
     private EditText from;
     private EditText to;
+    private EditText phone;
     private CheckBox rights;
     private TextView rightsTxt;
     private Button complete;
@@ -116,6 +117,7 @@ public class AddOrder extends Activity implements View.OnTouchListener{
         pickedTime = (EditText) findViewById(R.id.time_string);
         from = (EditText) findViewById(R.id.from);
         to = (EditText) findViewById(R.id.to);
+        phone = (EditText) findViewById(R.id.phone);
         rights = (CheckBox) findViewById(R.id.rights);
         rightsTxt = (TextView) findViewById(R.id.rights_txt);
         complete = (Button) findViewById(R.id.complete);
@@ -345,6 +347,9 @@ public class AddOrder extends Activity implements View.OnTouchListener{
     }
 
     private void createOrder(){
+        if(phone.getText().length() > 0){
+            map.put("phone", phone.getText().toString());
+        }
         RestModuleNew.provideRestService().post(CREATE_ORDER, AppSettingsProvider.getInstance().getToken(AddOrder.this), map, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
