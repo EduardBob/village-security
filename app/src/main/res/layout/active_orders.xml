@@ -1,0 +1,147 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:background="@drawable/bg"
+    android:id="@+id/main_layout"
+    android:animateLayoutChanges="true">
+
+
+    <RelativeLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:id="@+id/my_profile_button"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+
+                <ImageView
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/orange_round" />
+
+                <ImageView
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:src="@drawable/user"
+                    android:id="@+id/my_profile" />
+
+            </FrameLayout>
+            <ImageView
+                android:background="#F96332"
+                android:src="@drawable/lightarrowright"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:id="@+id/right_button"
+                android:paddingRight="16dp"
+                android:paddingLeft="4dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true" />
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="'Roboto',sans-serif"
+                android:textSize="26dp"
+                android:text="Активные заявки"
+                android:textAlignment="center"
+                android:textColor="#FFF"
+                android:singleLine="true"
+                android:id="@+id/textView"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true">
+            </TextView>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/hint_text"
+        android:visibility="visible"
+        android:layout_below="@+id/email_login_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff">
+
+        <EditText
+            android:focusableInTouchMode="true"
+            android:id="@+id/search_bar_active"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="'Roboto', sans-serif"
+            android:gravity="center_horizontal"
+            android:hint="Поиск"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:padding="16dp"
+            android:textColor="#000"
+            android:textColorHint="#90000000"
+            android:textSize="18dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textColor="#000"
+            android:textSize="18dp"
+            android:visibility="gone"
+            android:text="Нет заявок"
+            android:fontFamily="'Roboto', sans-serif"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipe_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:divider="#fff"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:background="#fff"
+                android:id="@+id/active_orders_list"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+            </ListView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+
+
+    <ImageView
+        android:layout_margin="16dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/plus"
+        android:layout_weight="1"
+        android:id="@+id/add_order"
+        android:layout_alignBottom="@+id/hint_text"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
+

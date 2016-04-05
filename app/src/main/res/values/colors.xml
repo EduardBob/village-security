@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="common_light_gray">#c9c9c9</color>
+    <color name="common_blue">#0273a6</color>
+    <color name="common_light_blue">#ff0288c3</color>
+    <color name="common_light_blue_background">#93c0de</color>
+    <color name="common_dark_blue">#00273a</color>
+    <color name="common_dark_blue3">#c8004c6f</color>
+    <color name="common_dark_blue_2">#002435</color>
+    <color name="common_gray">#b3b3b3</color>
+    <color name="common_dark_gray">#ff474747</color>
+    <color name="common_green">#60ff00</color>
+    <color name="common_red">#c01e4f</color>
+    <color name="header_color">#ff003452</color>
+    <color name="list_item_header_text">#003d5b</color>
+    <color name="additional_text_color">#7a93a6</color>
+    <color name="list_item_background">#d4dce5</color>
+    <color name="edit_text_blue">#033d68</color>
+    <color name="seek_bar_background">@color/common_light_blue_background</color>
+    <color name="bridgem_network_text">#92bfde</color>
+    <color name="white">#ffffff</color>
+    <color name="editProfileText">#81c6e7</color>
+    <color name="semi_transparent">#88ffffff</color>
+    <color name="background_color">#efefef</color>
+
+    <color name="title_list">#393939</color>
+    <color name="by_list_gray">#7d7d7d</color>
+    <color name="chat_me">#013c5a</color>
+
+    <color name="title_dark">#222222</color>
+    <color name="title_light">#999999</color>
+    <color name="light_bg_contact">#f2f2f2</color>
+    <color name="success_green">#0e7331</color>
+    <color name="decline_red">#c01d52</color>
+    <color name="chat_list_color_new">#212121</color>
+    <color name="chat_list_color_old">#d5d5d5</color>
+    <color name="new_color_dark">#202020</color>
+    <color name="list_options_name">#989898</color>
+
+    <color name="profile_send_active">#003d5c</color>
+    <color name="profile_send_inactive">#c7c7c7</color>
+    <color name="backgorund_holder_color">#e0e0e0</color>
+    <color name="bca_default">#353535</color>
+    <color name="bca_top">#ffffff</color>
+    <color name="bca_desable">#bebebe</color>
+    <color name="black">#000000</color>
+
+    <color name="cat_eve_list_def">#f90a2638</color>
+    <color name="cat_eve_list_press">#f91c6891</color>
+    <color name="cat_eve_list_des">#f9c7c7c7</color>
+
+    <!-- New colors-->
+    <color name="new_black">#2d2d2d</color>
+    <color name="new_grey1">#999999</color>
+    <color name="new_grey2">#d1d1d1</color>
+    <color name="new_light_grey1">#f2f2f2</color>
+    <color name="new_light_grey2">#f8f8f8</color>
+    <color name="new_blue1">#003d5b</color>
+    <color name="new_blue2">#00273a</color>
+    <color name="new_dark_blue">#0f161a</color>
+    <color name="new_light_blue">#829aa6</color>
+    <color name="new_red">#c01e47</color>
+    <color name="new_green">#0c7433</color>
+    <color name="new_gold">#e3a756</color>
+    <color name="new_bronze">#e38856</color>
+</resources>

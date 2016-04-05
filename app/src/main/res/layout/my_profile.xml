@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/bg"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="30dp">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:background="#F96332"
+                android:src="@drawable/lightarrowleft"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:id="@+id/left_button"
+                android:paddingLeft="16dp"
+                android:paddingRight="4dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true" />
+
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="'Roboto',sans-serif"
+                android:textSize="26dp"
+                android:text="Мой профиль"
+                android:textColor="#FFF"
+                android:singleLine="true"
+                android:id="@+id/textView"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+<RelativeLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/name"
+        android:paddingTop="14dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="14dp"
+        android:textSize="16sp"
+        android:text="ФИО"
+        android:textColor="#F96332"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/phone"
+        android:layout_below="@+id/name"
+        android:paddingTop="14dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:paddingBottom="14dp"
+        android:textSize="16sp"
+        android:text="Телефон"
+        android:textColor="#DCDCDC"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/poselok"
+        android:layout_below="@+id/phone"
+        android:paddingTop="14dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:textColor="#dcdcdc"
+        android:text="Название поселка"
+        android:textSize="16sp"
+        android:paddingBottom="14dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/refresh_time"
+        android:layout_below="@+id/poselok"
+        android:paddingTop="14dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
+        android:textColor="#dcdcdc"
+        android:text="Время обновления списка (сек.) :"
+        android:textSize="16sp"
+        android:paddingBottom="14dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:inputType="numberDecimal"
+        android:textStyle="italic"
+        android:background="#00ffffff"
+        android:id="@+id/refresh_time_sec"
+        android:layout_below="@+id/poselok"
+        android:layout_toRightOf="@id/refresh_time"
+        android:paddingTop="14dp"
+        android:paddingRight="16dp"
+        android:paddingLeft="4dp"
+        android:textColor="#dcdcdc"
+        android:hint="5"
+        android:textColorHint="#90ffffff"
+        android:textSize="16sp"
+        android:paddingBottom="14dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_below="@+id/name"
+        android:background="@color/common_gray"
+        android:layout_width="match_parent"
+        android:layout_height="1px"></View>
+
+    <View
+        android:layout_below="@+id/refresh_time"
+        android:background="@color/common_gray"
+        android:layout_width="match_parent"
+        android:layout_height="1px"></View>
+
+    <View
+        android:layout_below="@+id/phone"
+        android:background="@color/common_gray"
+        android:layout_width="match_parent"
+        android:layout_height="1px"></View>
+    <View
+        android:layout_below="@+id/poselok"
+        android:background="@color/common_gray"
+        android:layout_width="match_parent"
+        android:layout_height="1px"></View>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выйти"
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:layout_weight="1"
+        android:id="@+id/log_out"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="#fff"
+        android:fontFamily="'Roboto', sans-serif"
+        android:background="#50F96332"
+        android:gravity="center_horizontal" />
+</RelativeLayout>
+</LinearLayout>
