@@ -221,13 +221,12 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() > 2) {
-                    refreshList();
+
                     map.put("search", searchBar.getText().toString());
-                    getOrders(PAGE);
-                } else if (editable.length() == 0) {
                     refreshList();
+                } else if (editable.length() == 0) {
                     map.remove("search");
-                    getOrders(PAGE);
+                    refreshList();
                 }
             }
         });

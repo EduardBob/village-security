@@ -165,7 +165,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                     hideKeyBoard();
 
                     map.put("search", searchBar.getText().toString());
-                    getOrders(PAGE);
+                    refreshList();
                     return true;
                 }
                 return false;
@@ -186,13 +186,11 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() > 2) {
-                    refreshList();
                     map.put("search", searchBar.getText().toString());
-                    getOrders(PAGE);
-                } else if (editable.length() == 0) {
                     refreshList();
+                } else if (editable.length() == 0) {
                     map.remove("search");
-                    getOrders(PAGE);
+                    refreshList();
                 }
             }
         });
