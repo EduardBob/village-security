@@ -23,7 +23,7 @@ public class Profile implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Data1{
+    public static class Data1  implements Serializable{
         private String id;
         private String first_name;
         private String last_name;
@@ -88,7 +88,7 @@ public class Profile implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Building{
+    public static class Building implements Serializable{
         private DataBuilding data;
 
         public Building(){}
@@ -102,7 +102,7 @@ public class Profile implements Serializable {
         }
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class DataBuilding{
+        public static class DataBuilding implements Serializable{
 
             private String id;
             private String address;
@@ -135,7 +135,7 @@ public class Profile implements Serializable {
             }
 
             @JsonIgnoreProperties(ignoreUnknown = true)
-            public static class Village{
+            public static class Village  implements Serializable{
                 private Data data;
 
                 public Village(){}
@@ -150,7 +150,7 @@ public class Profile implements Serializable {
             }
 
             @JsonIgnoreProperties(ignoreUnknown = true)
-            public static class Data{
+            public static class Data  implements Serializable{
                 private String name;
                 private String shop_name;
                 private String shop_address;

@@ -2,8 +2,6 @@ package com.security.village.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
-import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,7 +9,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -19,8 +16,6 @@ import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import retrofit.Callback;
@@ -46,7 +42,7 @@ import retrofit.client.Response;
 /**
  * Created by fruitware on 12/23/15.
  */
-public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickListener, SwipeRefreshLayout.OnRefreshListener{
+public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String ALL_ORDERS = "api/v1/security/services/orders";
 
@@ -74,15 +70,35 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     private String lastDay;
     private String lastMonth;
     private String lastYear;
+    private long milisec;
+    private long MIN_DT = 500;
 
-    private Handler handler;
+    private Handler handler, refHandler;
     private Runnable refreshList;
+    private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            if (scrollState == SCROLL_STATE_IDLE) {
+                if (isLastPageEmpty) {
+                    return;
+                }
+                PAGE++;
+                getOrders(PAGE);
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_orders);
         handler = new Handler();
+        refHandler = new Handler();
         map = new HashMap<>();
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
@@ -92,7 +108,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         adapter.setListener(this);
 
         recentDay += Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        recentMonth += Calendar.getInstance().get(Calendar.MONTH)+1;
+        recentMonth += Calendar.getInstance().get(Calendar.MONTH) + 1;
         recentYear += Calendar.getInstance().get(Calendar.YEAR);
 
         initializeViews();
@@ -107,7 +123,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         refreshList();
     }
 
-    private void initializeViews(){
+    private void initializeViews() {
         title = (TextView) findViewById(R.id.title);
         ordersList = (ListView) findViewById(R.id.all_orders_list);
         rightButton = (ImageView) findViewById(R.id.right_button);
@@ -187,25 +203,55 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
             public void afterTextChanged(Editable editable) {
                 if (editable.length() > 2) {
                     map.put("search", searchBar.getText().toString());
-                    refreshList();
+                    long curTime = System.currentTimeMillis();
+                    if (curTime > milisec + MIN_DT) {
+                        milisec = curTime;
+                        list.clear();
+                        refreshList();
+                    } else {
+                        refHandler.removeCallbacksAndMessages(null);
+                        refHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.clear();
+                                refreshList();
+                            }
+                        }, MIN_DT);
+                    }
+
+
                 } else if (editable.length() == 0) {
                     map.remove("search");
-                    refreshList();
+                    long curTime = System.currentTimeMillis();
+                    if (curTime > milisec + MIN_DT) {
+                        milisec = curTime;
+                        list.clear();
+                        refreshList();
+                    } else {
+                        refHandler.removeCallbacksAndMessages(null);
+                        refHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.clear();
+                                refreshList();
+                            }
+                        }, MIN_DT);
+                    }
                 }
             }
         });
     }
 
-    private void hideKeyBoard(){
-        try{
-            InputMethodManager inputMethodManager = (InputMethodManager)  AllOrders.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    private void hideKeyBoard() {
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) AllOrders.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(AllOrders.this.getCurrentFocus().getWindowToken(), 0);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void changeDate(int day){
+    private void changeDate(int day) {
         Log.d("lastDate", "called changeDate();" + " with 'int day = " + Integer.toString(day));
         if (day != Keys.DATE_THAT_DOESNT_EXIST) {
             calendar.set(Calendar.DAY_OF_MONTH, day);
@@ -213,13 +259,13 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         String resultDay;
         String resultMonth;
         if (calendar.get(Calendar.DAY_OF_MONTH) < 10) {
-            resultDay = "0"+Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
-        }else{
+            resultDay = "0" + Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        } else {
             resultDay = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
         }
         if (calendar.get(Calendar.MONTH) + 1 < 10) {
             resultMonth = "0" + Integer.toString(calendar.get(Calendar.MONTH) + 1);
-        }else{
+        } else {
             resultMonth = Integer.toString(calendar.get(Calendar.MONTH) + 1);
         }
         title.setText(resultDay + "-" + resultMonth + "-" + Integer.toString(calendar.get(Calendar.YEAR)));
@@ -227,7 +273,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         map.put("to_perform_date", Integer.toString(calendar.get(Calendar.YEAR)) + "-" + resultMonth + "-" + resultDay);
     }
 
-    private void refreshList(){
+    private void refreshList() {
         swipeLayout.setRefreshing(true);
         list.clear();
         adapter.notifyDataSetChanged();
@@ -236,58 +282,40 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         getOrders(PAGE);
     }
 
-    private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            if (scrollState == SCROLL_STATE_IDLE) {
-                if (isLastPageEmpty) {
-                    return;
-                }
-                PAGE++;
-                getOrders(PAGE);
-            }
-        }
-
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        }
-    };
-
-    private void getOrders(final int PAGE){
-        if(list.size() >= 10 && PAGE == 0){
-            map.put("page","1");
+    private void getOrders(final int PAGE) {
+        if (list.size() >= 10 && PAGE == 0) {
+            map.put("page", "1");
             map.put("limit", Integer.toString(list.size()));
         } else {
             map.put("page", Integer.toString(PAGE));
         }
-            RestModuleNew.provideRestService().getAuth(ALL_ORDERS, AppSettingsProvider.getInstance().getToken(AllOrders.this), map, new Callback<String>() {
-                @Override
-                public void success(String s, Response response) {
-                    swipeLayout.setRefreshing(false);
-                    try {
-                        Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
-                        if(PAGE == 0){
-                            list.clear();
-                            for(Orders.Data x : orders.getData()){
-                                list.add(x);
-                            }
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            visualizeOrders(orders);
+        RestModuleNew.provideRestService().getAuth(ALL_ORDERS, AppSettingsProvider.getInstance().getToken(AllOrders.this), map, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                swipeLayout.setRefreshing(false);
+                try {
+                    Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
+                    if (PAGE == 0) {
+                        list.clear();
+                        for (Orders.Data x : orders.getData()) {
+                            list.add(x);
                         }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        visualizeOrders(orders);
                     }
-                }
 
-                @Override
-                public void failure(RetrofitError error) {
-                    swipeLayout.setRefreshing(false);
-                    toast(HttpErrorHandler.handleError(error));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            });
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                swipeLayout.setRefreshing(false);
+                toast(HttpErrorHandler.handleError(error));
+            }
+        });
 
     }
 
@@ -320,13 +348,29 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
 
     public void visualizeOrders(Orders orders) {
         List<Orders.Data> listTmp = new ArrayList<>();
-        for(Orders.Data x : orders.getData()){
+        for (Orders.Data x : orders.getData()) {
+            if(list.size() == 0){
                 list.add(x);
-                listTmp.add(x);
+            } else {
+                for (Iterator<Orders.Data> dd = list.iterator(); list.iterator().hasNext(); ) {
+                    if (list.size() != 0) {
+                        try {
+                            if (!dd.next().getId().equalsIgnoreCase(x.getId())) {
+                                list.add(x);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    } else{
+                        break;
+                    }
+                }
+            }
+            listTmp.add(x);
         }
 
-
-        if(list.size() != 0){
+        if (list.size() != 0) {
             hint.setVisibility(View.GONE);
         } else {
             hint.setVisibility(View.VISIBLE);
@@ -341,12 +385,12 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
 //            rightButton.setBackgroundColor(Color.parseColor("#F96332"));
     }
 
-    public void toast(String str){
+    public void toast(String str) {
         if (str != null) {
-            if(str.equalsIgnoreCase("token_invalid")){
+            if (str.equalsIgnoreCase("token_invalid")) {
                 RestModuleNew.refreshToken(AllOrders.this, AppSettingsProvider.getInstance().getToken(AllOrders.this));
                 return;
-            }else
+            } else
                 Toast.makeText(AllOrders.this, str, Toast.LENGTH_SHORT).show();
         }
     }
@@ -364,13 +408,13 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Keys.REFRESH || requestCode == Keys.REFRESH){
+        if (resultCode == Keys.REFRESH || requestCode == Keys.REFRESH) {
             try {
                 int id = Integer.parseInt(data.getStringExtra(Keys.ORDER_ID));
                 String payment = data.getStringExtra(Keys.PAYMENT_STATUS);
                 String status = data.getStringExtra(Keys.STATUS);
-                for(Orders.Data x : list){
-                    if(Integer.parseInt(x.getId()) == id){
+                for (Orders.Data x : list) {
+                    if (Integer.parseInt(x.getId()) == id) {
                         if (payment == null)
                             payment = x.getPayment_status();
                         if (status == null)
@@ -384,7 +428,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
             } catch (NumberFormatException e) {
                 e.printStackTrace();
                 refreshList();
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

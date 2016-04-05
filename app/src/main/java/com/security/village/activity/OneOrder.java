@@ -1,13 +1,21 @@
 package com.security.village.activity;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.security.village.DateUtils;
 import com.security.village.HttpErrorHandler;
@@ -70,7 +78,7 @@ public class OneOrder extends Activity {
         getOrderInfo();
     }
 
-    private void initializeViews(){
+    private void initializeViews() {
         mainLayout = (LinearLayout) findViewById(R.id.layout_holder);
         mainLayout.setVisibility(View.INVISIBLE);
         arrowLeft = (ImageView) findViewById(R.id.left_button);
@@ -191,8 +199,8 @@ public class OneOrder extends Activity {
         });
     }
 
-    public void sendRequest(){
-        if(comment.getText().length() > 0){
+    public void sendRequest() {
+        if (comment.getText().length() > 0) {
             map.put("admin_comment", comment.getText().toString());
         }
         RestModuleNew.provideRestService().patch(UPDATE_ORDER + orderId, AppSettingsProvider.getInstance().getToken(OneOrder.this), map, new Callback<String>() {
@@ -221,7 +229,7 @@ public class OneOrder extends Activity {
         });
     }
 
-    private void getOrderInfo(){
+    private void getOrderInfo() {
         RestModuleNew.provideRestService().getAuth(ONE_ORDER + orderId, AppSettingsProvider.getInstance().getToken(this), null, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
@@ -242,22 +250,22 @@ public class OneOrder extends Activity {
         });
     }
 
-    private void viewOrder(Orders.Order data){
+    private void viewOrder(Orders.Order data) {
         Orders.Data order = data.getData();
         map.put("status", order.getStatus());
         map.put("payment_status", order.getPayment_status());
-        if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)){
+        if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
             payment.setChecked(true);
             payment.setEnabled(false);
             paymentLayout.setEnabled(false);
         }
-        if (Float.parseFloat(order.getPrice()) == 0){
+        if (Float.parseFloat(order.getPrice()) == 0) {
             info.setText("Бесплатно");
             paymentLayout.setVisibility(View.GONE);
-        }else{
-            info.setText(order.getPrice().substring(0,order.getPrice().indexOf(".")) + " рублей");
-            if(order.getPayment_type().equalsIgnoreCase("card")){
-                if(order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
+        } else {
+            info.setText(order.getPrice().substring(0, order.getPrice().indexOf(".")) + " рублей");
+            if (order.getPayment_type().equalsIgnoreCase("card")) {
+                if (order.getPayment_status().equalsIgnoreCase(Keys.PAID)) {
                     paymentTxt.setText("Оплата on-line");
                     payment.setEnabled(false);
                     payment.setChecked(true);
@@ -269,7 +277,7 @@ public class OneOrder extends Activity {
             }
         }
 
-        if (order.getStatus().equalsIgnoreCase(Keys.DONE)){
+        if (order.getStatus().equalsIgnoreCase(Keys.DONE)) {
             arrived.setChecked(true);
             complete.setVisibility(View.GONE);
             payment.setEnabled(false);
@@ -281,33 +289,45 @@ public class OneOrder extends Activity {
 
         String dateTime = "";
 
-        if(order.getPerform_date() != null){
-               dateTime += DateUtils.formatDate(order.getPerform_date(), DateUtils.DATE_FORMAT_7, DateUtils.DATE_FORMAT_22);
-            order.getPerform_date();
-            if(order.getPerform_time() != null)
+        if (order.getPerform_date() != null) {
+            dateTime += DateUtils.formatDate(order.getPerform_date(), DateUtils.DATE_FORMAT_7, DateUtils.DATE_FORMAT_22);
+            if (order.getPerform_time() != null)
                 dateTime += " " + order.getPerform_time();
         }
 
-        if(dateTime.length() >= 10)
-            this.dateTime.setText(dateTime);
-        else{
-            this.dateTime.setVisibility(View.GONE);
-            this.dateTimeLabel.setVisibility(View.GONE);
-        }
+        try {
+            if (dateTime.length() != 0 && !dateTime.equalsIgnoreCase(""))
+                this.dateTime.setText(dateTime);
+            else {
+                this.dateTime.setVisibility(View.GONE);
+                this.dateTimeLabel.setVisibility(View.GONE);
+            }
 
-        if (order.getAdded_from() != null  && !order.getAdded_from().equals("")) {
-            declarer.setText(order.getAdded_from());
-        } else {
-            declarer.setText(order.getUser().getData().getFirst_name().trim() + " " + order.getUser().getData().getLast_name().trim());
+
+            if (order.getAdded_from() != null && !order.getAdded_from().equals("")) {
+                declarer.setText(order.getAdded_from());
+            } else {
+                String d = order.getUser().getData().getFirst_name().trim() + " " + order.getUser().getData().getLast_name().trim()
+                        + ((order.getUser().getData().getPhone() != null) ? ", " + order.getUser().getData().getPhone() : "")
+                        + ((order.getUser().getData().getBuilding().getData().getAddress() != null) ? ", " + order.getUser().getData().getBuilding().getData().getAddress() : "")
+                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getName() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getName() : "")
+                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_name() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_name() : "")
+                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_address() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_address() : "");
+                declarer.setText(d);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+
         }
         service.setText(order.getService().getData().getTitle());
         object.setText(order.getComment());
 
-        if (order.getAdmin_comment() != null){
+        if (order.getAdmin_comment() != null) {
             comment.setText(order.getAdmin_comment());
         }
 
-        if(order.getPhone() != null){
+        if (order.getPhone() != null) {
             phone.setText(order.getPhone());
         } else {
             phone.setVisibility(View.GONE);
@@ -318,12 +338,12 @@ public class OneOrder extends Activity {
         swipeLayout.setRefreshing(false);
     }
 
-    public void toast(String str){
+    public void toast(String str) {
         if (str != null) {
-            if(str.equalsIgnoreCase("token_invalid")){
+            if (str.equalsIgnoreCase("token_invalid")) {
                 RestModuleNew.refreshToken(OneOrder.this, AppSettingsProvider.getInstance().getToken(OneOrder.this));
                 return;
-            }else
+            } else
                 Toast.makeText(OneOrder.this, str, Toast.LENGTH_SHORT).show();
         }
     }

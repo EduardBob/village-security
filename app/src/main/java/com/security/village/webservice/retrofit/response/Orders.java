@@ -319,8 +319,13 @@ public class Orders implements Serializable {
             private String email;
             private String phone;
             private boolean activated;
+            private Profile.Building building;
 
             public UserData(){}
+
+            public Profile.Building getBuilding() {
+                return building;
+            }
 
             public String getEmail() {
                 return email;
@@ -340,6 +345,10 @@ public class Orders implements Serializable {
 
             public String getPhone() {
                 return phone;
+            }
+
+            public void setBuilding(Profile.Building building) {
+                this.building = building;
             }
 
             public void setActivated(boolean activated) {

@@ -30,10 +30,10 @@ import com.security.village.webservice.retrofit.RestModuleNew;
 import com.security.village.webservice.retrofit.response.Orders;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import retrofit.Callback;
@@ -57,10 +57,12 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     private FrameLayout my_profile_button;
 
     private HashMap<String, String> map;
+    private long milisec;
     private List<Orders.Data> list;
     private List<Orders.Data> list2;
     private int PAGE = 1;
     private int LAST_PAGE = 0;
+    private int MIN_DT = 500;
     private boolean isLastPageEmpty = false;
     private boolean isListOne = false;
     private int recentDay;
@@ -69,7 +71,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
 
     private FrameLayout myProfileButton;
 
-    private Handler handler;
+    private Handler handler, refHandler;
     private Runnable refreshList;
     private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
         @Override
@@ -95,6 +97,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         setContentView(R.layout.active_orders);
         map = new HashMap<>();
         handler = new Handler();
+        refHandler = new Handler();
         my_profile_button = (FrameLayout) findViewById(R.id.my_profile_button);
         map.put("status", "processing");
         map.put("page", Integer.toString(PAGE));
@@ -165,6 +168,8 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         ordersList.setAdapter(adapter);
         ordersList.setOnScrollListener(onScroll);
 
+        adapter.setListOfData(list);
+
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
@@ -223,10 +228,39 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                 if (editable.length() > 2) {
 
                     map.put("search", searchBar.getText().toString());
-                    refreshList();
+                    long curTime = System.currentTimeMillis();
+                    if (curTime > milisec + MIN_DT) {
+                        milisec = curTime;
+                        list.clear();
+                        refreshList();
+                    } else {
+                        refHandler.removeCallbacksAndMessages(null);
+                        refHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.clear();
+                                refreshList();
+                            }
+                        }, MIN_DT);
+                    }
+
                 } else if (editable.length() == 0) {
                     map.remove("search");
-                    refreshList();
+                    long curTime = System.currentTimeMillis();
+                    if (curTime > milisec + MIN_DT) {
+                        milisec = curTime;
+                        list.clear();
+                        refreshList();
+                    } else {
+                        refHandler.removeCallbacksAndMessages(null);
+                        refHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                list.clear();
+                                refreshList();
+                            }
+                        }, MIN_DT);
+                    }
                 }
             }
         });
@@ -252,62 +286,78 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
 
     private void getOrders(final int PAGE) {
 
-            if(list.size() >= 10 && PAGE == 0){
-                map.put("page","1");
-                map.put("limit", Integer.toString(list.size()));
-            } else {
-                map.put("page", Integer.toString(PAGE));
-                map.remove("limit");
-            }
-
-            RestModuleNew.provideRestService().getAuth(ACTIVE_ORDERS, AppSettingsProvider.getInstance().getToken(ActiveOrders.this), map, new Callback<String>() {
-                @Override
-                public void success(String s, Response response) {
-                    try {
-                        Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
-                        if(PAGE == 0){
-                            list.clear();
-                            for(Orders.Data x : orders.getData()){
-                                list.add(x);
-                            }
-                            adapter.notifyDataSetChanged();
-                        } else {
-                            visualizeOrders(orders);
-                        }
-                    } catch (IOException e) {
-                        swipeLayout.setRefreshing(false);
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                    swipeLayout.setRefreshing(false);
-                    toast(HttpErrorHandler.handleError(error), AppSettingsProvider.getInstance().getToken(ActiveOrders.this));
-                }
-            });
+        if (list.size() >= 10 && PAGE == 0) {
+            map.put("page", "1");
+            map.put("limit", Integer.toString(list.size()));
+        } else {
+            map.put("page", Integer.toString(PAGE));
+            map.remove("limit");
         }
 
+        RestModuleNew.provideRestService().getAuth(ACTIVE_ORDERS, AppSettingsProvider.getInstance().getToken(ActiveOrders.this), map, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                try {
+                    Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
+                    if (PAGE == 0) {
+                        list.clear();
+                        for (Orders.Data x : orders.getData()) {
+                            list.add(x);
+                        }
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        visualizeOrders(orders);
+                    }
+                } catch (IOException e) {
+                    swipeLayout.setRefreshing(false);
+                    e.printStackTrace();
+                }
+            }
 
-    public void visualizeOrders(Orders orders){
+            @Override
+            public void failure(RetrofitError error) {
+                swipeLayout.setRefreshing(false);
+                toast(HttpErrorHandler.handleError(error), AppSettingsProvider.getInstance().getToken(ActiveOrders.this));
+            }
+        });
+    }
+
+
+    public void visualizeOrders(Orders orders) {
         List<Orders.Data> listTmp = new ArrayList<>();
-        for(Orders.Data x : orders.getData()){
-            list.add(x);
+        for (Orders.Data x : orders.getData()) {
+            if (list.size() == 0) {
+                list.add(x);
+            } else {
+                for (Iterator<Orders.Data> dd = list.iterator(); list.iterator().hasNext(); ) {
+                    if (list.size() != 0) {
+                        try {
+                            if (!dd.next().getId().equalsIgnoreCase(x.getId())) {
+                                list.add(x);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            break;
+                        }
+                    } else{
+                        break;
+                    }
+                }
+            }
             listTmp.add(x);
         }
 
-        if(listTmp.size() < 10){
+        if (list.size() < 10) {
             isLastPageEmpty = true;
         }
 
 
-        if(list.size() != 0){
+        if (listTmp.size() != 0) {
             hint.setVisibility(View.GONE);
         } else {
             hint.setVisibility(View.VISIBLE);
         }
 
-        adapter.setListOfData(list);
         adapter.notifyDataSetChanged();
         swipeLayout.setRefreshing(false);
     }
