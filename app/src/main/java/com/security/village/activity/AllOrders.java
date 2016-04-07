@@ -276,7 +276,6 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                         getOrders(PAGE);
                     } else {
                         if(curTime - lastSec < 200){
-
                             switchDate = new Runnable() {
                                 @Override
                                 public void run() {
