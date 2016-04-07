@@ -87,6 +87,7 @@
             android:hint="Поиск"
             android:inputType="text"
             android:maxLines="1"
+            android:imeOptions="actionGo"
             android:padding="16dp"
             android:maxLength="255"
             android:textColor="#000"

@@ -81,6 +81,7 @@
             android:maxLines="1"
             android:padding="16dp"
             android:textColor="#000"
+            android:imeOptions="actionGo"
             android:maxLength="255"
             android:textColorHint="#90000000"
             android:textSize="18dp"

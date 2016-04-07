@@ -8,7 +8,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.EditText;
@@ -55,7 +57,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     private FrameLayout my_profile_button;
 
     private HashMap<String, String> map;
-    private long lastSec;
+    private long lastSec, lastAutoRefresh;
     private List<Orders.Data> list;
     private int PAGE = 1;
     private int MIN_DT = 500;
@@ -91,6 +93,10 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
             handler.removeCallbacks(setRefreshOnFalse);
         }
 
+        isSearching = false;
+        isRefreshing = false;
+        isScrolling = false;
+
 
     }
 
@@ -125,12 +131,13 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         setRefreshOnFalse = new Runnable() {
             @Override
             public void run() {
+                swipeLayout.setRefreshing(false);
                 isRefreshing = false;
             }
         };
 
         my_profile_button = (FrameLayout) findViewById(R.id.my_profile_button);
-        map.put("status", "processing");
+        map.put("only_opened", "1");
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
         adapter = new OrdersAdapter(this, 0, false, OrdersAdapter.CUT);
@@ -164,6 +171,11 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                 if (!isRefreshing && !isScrolling && !isSearching) {
                     Log.w("TRACE_ACTIVE", "auto refresh = ON");
                     getOrders(0);
+                    lastAutoRefresh = System.currentTimeMillis();
+                }
+
+                if(System.currentTimeMillis() - lastAutoRefresh > AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000 && lastAutoRefresh != 0){
+                    disableAllRunnables();
                 }
                 Log.w("REFRESH_ACTIVE", Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
                 handler.postDelayed(this, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
@@ -230,6 +242,21 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
             }
         });
 
+
+
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+
+                    hideKeyBoard();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
 //        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
 //            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -293,9 +320,9 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                 }
 
                 disableAllRunnables();
+                isSearching = true;
                 PAGE = 1;
                 swipeLayout.setRefreshing(true);
-                isSearching = true;
                 if (editable.length() > 2) {
                     map.put("search", searchBar.getText().toString());
                     final long curTime = System.currentTimeMillis();
@@ -304,15 +331,19 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                         isSearchingRunFalse = new Runnable() {
                             @Override
                             public void run() {
+                                if(isSearching){
+                                    lastSec = curTime;
+                                    Log.w("TRACE_ACTIVE", "plain search curTime - lastSec > 500");
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    getOrders(PAGE);
+                                }
+
                                 isSearching = false;
                             }
                         };
                         handler.postDelayed(isSearchingRunFalse,800);
-                        lastSec = curTime;
-                        Log.w("TRACE_ACTIVE", "plain search curTime - lastSec > 500");
-                        list.clear();
-                        adapter.notifyDataSetChanged();
-                        getOrders(PAGE);
+
                     } else {
                         if (curTime - lastSec < 100) {
                             if (setSearchOnFalse != null)
@@ -322,20 +353,26 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                                 @Override
                                 public void run() {
                                     if (lastString.equalsIgnoreCase(editable.toString()) && editable.length() > 2) {
-                                        map.put("search", editable.toString());
+                                       if(isSearching) {
+                                           map.put("search", editable.toString());
+                                           lastSec = curTime;
+                                           list.clear();
+                                           adapter.notifyDataSetChanged();
+                                           Log.w("TRACE_ACTIVE", "compare search handler");
+                                           getOrders(PAGE);
+                                       }
+
                                         isSearching = false;
-                                        lastSec = curTime;
-                                        list.clear();
-                                        adapter.notifyDataSetChanged();
-                                        Log.w("TRACE_ACTIVE", "compare search handler");
-                                        getOrders(PAGE);
+
                                     } else if (lastString.length() < 2) {
                                         if (setSearchOnFalse != null)
                                             handler.removeCallbacks(setSearchOnFalse);
                                         map.remove("search");
 
-                                        isSearching = false;
+                                        if(isSearching)
                                         refreshList();
+
+                                        isSearching = false;
                                     }
 
                                     lastString = editable.toString();
@@ -363,12 +400,14 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                             setSearchOnFalse = new Runnable() {
                                 @Override
                                 public void run() {
-                                    isSearching = false;
-                                    lastSec = curTime;
-                                    list.clear();
-                                    adapter.notifyDataSetChanged();
-                                    Log.w("TRACE_ACTIVE", "plain search handler");
-                                    getOrders(PAGE);
+                                    if(isSearching){
+                                        lastSec = curTime;
+                                        list.clear();
+                                        adapter.notifyDataSetChanged();
+                                        Log.w("TRACE_ACTIVE", "plain search handler");
+                                        getOrders(PAGE);
+                                    }
+                                        isSearching = false;
                                 }
                             };
                             handler.postDelayed(setSearchOnFalse, 2000);
@@ -393,8 +432,9 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                     fullRefresh = new Runnable() {
                         @Override
                         public void run() {
-                            isSearching = false;
+                            if(isSearching)
                             refreshList();
+                            isSearching = false;
                         }
                     };
 
@@ -450,7 +490,7 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
                             list.add(x);
                         }
 
-                        if (list.size() != 0) {
+                        if (list.size() != 0 || orders.getData().length > 0) {
                             hint.setVisibility(View.GONE);
                         } else {
                             hint.setVisibility(View.VISIBLE);

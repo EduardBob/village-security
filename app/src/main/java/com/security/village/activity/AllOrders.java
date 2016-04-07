@@ -71,7 +71,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     private String lastMonth;
     private String lastYear;
     private String lastString = "";
-    private long milisec, lastSec;
+    private long milisec, lastSec, lastAutoRefresh;
     private long MIN_DT = 500;
 
     private boolean isScrolling, isRefreshing, isSearching, isChangingDate;
@@ -94,6 +94,8 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
             handler.removeCallbacks(switchDate);
         if(fullRefresh != null)
             handler.removeCallbacks(fullRefresh);
+
+        isScrolling = isRefreshing = isSearching = isChangingDate = false;
 
     }
     private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
@@ -130,6 +132,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         setContentView(R.layout.all_orders);
         handler = new Handler();
         map = new HashMap<>();
+        map.put("only_opened", "0");
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
         calendar = Calendar.getInstance();
@@ -140,6 +143,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         setRefreshOnFalse = new Runnable() {
             @Override
             public void run() {
+                swipeLayout.setRefreshing(false);
                 isRefreshing = false;
             }
         };
@@ -192,12 +196,12 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isChangingDate = true;
+
                 PAGE = 1;
                 swipeLayout.setRefreshing(true);
 
                 disableAllRunnables();
-
+                isChangingDate = true;
                 if(changeDate(calendar.get(Calendar.DAY_OF_MONTH) + 1)) {
 
                     final long curTime = System.currentTimeMillis();
@@ -253,12 +257,12 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isChangingDate = true;
+
                 PAGE = 1;
                 swipeLayout.setRefreshing(true);
 
                 disableAllRunnables();
-
+                isChangingDate = true;
                 if(changeDate(calendar.get(Calendar.DAY_OF_MONTH) - 1)){
                     final long curTime = System.currentTimeMillis();
                     if (curTime - lastSec > 500) {
@@ -312,20 +316,18 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
             }
         });
 
-//        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-//                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-//
-//                    hideKeyBoard();
-//
-//                    map.put("search", searchBar.getText().toString());
-//                    refreshList();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
+        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+
+                    hideKeyBoard();
+
+                    return true;
+                }
+                return false;
+            }
+        });
 
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -348,18 +350,21 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                     map.put("search", searchBar.getText().toString());
                     final long curTime = System.currentTimeMillis();
                     if (curTime - lastSec > 500) {
-                        lastSec = curTime;
-                        Log.w("TRACE_ALL", "plain search curTime - lastSec > 500");
-                        list.clear();
-                        adapter.notifyDataSetChanged();
                         isSearchingRunFalse = new Runnable() {
                             @Override
                             public void run() {
+                                if(isSearching){
+                                    lastSec = curTime;
+                                    Log.w("TRACE_ACTIVE", "plain search curTime - lastSec > 500");
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    getOrders(PAGE);
+                                }
+
                                 isSearching = false;
                             }
                         };
                         handler.postDelayed(isSearchingRunFalse, 800);
-                        getOrders(PAGE);
                     } else {
                         if(curTime - lastSec < 100){
 
@@ -367,20 +372,24 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                                 @Override
                                 public void run() {
                                     if (lastString.equalsIgnoreCase(editable.toString()) && editable.length() > 2) {
-                                        map.put("search", editable.toString());
+                                        if(isSearching) {
+                                            map.put("search", editable.toString());
+                                            lastSec = curTime;
+                                            list.clear();
+                                            adapter.notifyDataSetChanged();
+                                            Log.w("TRACE_ACTIVE", "compare search handler");
+                                            getOrders(PAGE);
+                                        }
                                         isSearching = false;
-                                        lastSec = curTime;
-                                        list.clear();
-                                        adapter.notifyDataSetChanged();
-                                        Log.w("TRACE_ACTIVE", "compare search handler");
-                                        getOrders(PAGE);
                                     } else if (lastString.length() < 2) {
                                         if (setSearchOnFalse != null)
                                             handler.removeCallbacks(setSearchOnFalse);
                                         map.remove("search");
 
+                                        if(isSearching)
+                                            refreshList();
+
                                         isSearching = false;
-                                        refreshList();
                                     }
 
                                     lastString = editable.toString();
@@ -410,15 +419,19 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                                 handler.removeCallbacks(searchCompare);
                             }
 
+                            lastString = "";
+
                             setSearchOnFalse = new Runnable() {
                                 @Override
                                 public void run() {
+                                    if(isSearching){
+                                        lastSec = curTime;
+                                        list.clear();
+                                        adapter.notifyDataSetChanged();
+                                        Log.w("TRACE_ACTIVE", "plain search handler");
+                                        getOrders(PAGE);
+                                    }
                                     isSearching = false;
-                                    lastSec = curTime;
-                                    list.clear();
-                                    adapter.notifyDataSetChanged();
-                                    Log.w("TRACE_ALL", "plain search handler");
-                                    getOrders(PAGE);
                                 }
                             };
                             handler.postDelayed(setSearchOnFalse, 1000);
@@ -443,8 +456,9 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                     fullRefresh = new Runnable() {
                         @Override
                         public void run() {
+                            if(isSearching)
+                                refreshList();
                             isSearching = false;
-                            refreshList();
                         }
                     };
 
@@ -520,7 +534,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                             list.add(x);
                         }
 
-                        if (list.size() != 0) {
+                        if (list.size() != 0 || orders.getData().length > 0) {
                             hint.setVisibility(View.GONE);
                         } else {
                             hint.setVisibility(View.VISIBLE);
@@ -558,6 +572,11 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                 if(!isRefreshing && !isScrolling && !isSearching && !isChangingDate) {
                     Log.w("TRACE_ALL", "auto refresh = ON");
                     getOrders(0);
+                    lastAutoRefresh = System.currentTimeMillis();
+                }
+
+                if(System.currentTimeMillis() - lastAutoRefresh > AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000 && lastAutoRefresh != 0){
+                    disableAllRunnables();
                 }
                 Log.w("REFRESH_ALL", Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
                 handler.postDelayed(this, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
