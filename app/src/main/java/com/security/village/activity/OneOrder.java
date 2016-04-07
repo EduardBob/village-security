@@ -309,10 +309,10 @@ public class OneOrder extends Activity {
             } else {
                 String d = order.getUser().getData().getFirst_name().trim() + " " + order.getUser().getData().getLast_name().trim()
                         + ((order.getUser().getData().getPhone() != null) ? ", " + order.getUser().getData().getPhone() : "")
-                        + ((order.getUser().getData().getBuilding().getData().getAddress() != null) ? ", " + order.getUser().getData().getBuilding().getData().getAddress() : "")
-                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getName() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getName() : "")
-                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_name() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_name() : "")
-                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_address() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_address() : "");
+                        + ((order.getUser().getData().getBuilding().getData().getAddress() != null) ? ", " + order.getUser().getData().getBuilding().getData().getAddress() : "");
+//                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getName() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getName() : "")
+//                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_name() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_name() : "")
+//                        + ((order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_address() != null) ? ", " + order.getUser().getData().getBuilding().getData().getVillage().getData().getShop_address() : "");
                 declarer.setText(d);
             }
         } catch (Exception e) {

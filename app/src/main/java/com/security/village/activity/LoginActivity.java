@@ -274,11 +274,11 @@ public class LoginActivity extends Activity {
                         Toast.makeText(getApplicationContext(), "Приносим извинения, но на текущий момент ведутся технические работы", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом или соединение было нарушено", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     swipeLayout.setRefreshing(false);
                     e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Отсутствует соединение с интернетом или соединение было нарушено", Toast.LENGTH_LONG).show();
                 }
             }
         });

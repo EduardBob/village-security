@@ -77,14 +77,17 @@
             android:fontFamily="'Roboto', sans-serif"
             android:gravity="center_horizontal"
             android:hint="Поиск"
-            android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
             android:padding="16dp"
             android:textColor="#000"
+            android:maxLength="255"
             android:textColorHint="#90000000"
             android:textSize="18dp"
             android:visibility="visible" />
+
+
+        <!--android:imeOptions="actionSearch"-->
 
         <TextView
             android:id="@+id/hint"

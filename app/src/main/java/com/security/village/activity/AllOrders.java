@@ -70,21 +70,52 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     private String lastDay;
     private String lastMonth;
     private String lastYear;
-    private long milisec;
+    private String lastString = "";
+    private long milisec, lastSec;
     private long MIN_DT = 500;
 
-    private Handler handler, refHandler;
-    private Runnable refreshList;
+    private boolean isScrolling, isRefreshing, isSearching, isChangingDate;
+
+    private Handler handler;
+    private Runnable refreshList, setRefreshOnFalse, isChangingDateRun, isSearchingRunFalse, setSearchOnFalse, manualRefresh, fullRefresh, searchCompare, switchDate;
+
+    private void disableAllRunnables(){
+        if(setRefreshOnFalse != null)
+            handler.removeCallbacks(setRefreshOnFalse);
+        if(isChangingDateRun != null)
+            handler.removeCallbacks(isChangingDateRun);
+        if(isSearchingRunFalse != null)
+            handler.removeCallbacks(isSearchingRunFalse);
+        if(setSearchOnFalse != null)
+            handler.removeCallbacks(setSearchOnFalse);
+        if(searchCompare != null)
+            handler.removeCallbacks(searchCompare);
+        if(switchDate != null)
+            handler.removeCallbacks(switchDate);
+        if(fullRefresh != null)
+            handler.removeCallbacks(fullRefresh);
+
+    }
     private AbsListView.OnScrollListener onScroll = new AbsListView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
 
             if (scrollState == SCROLL_STATE_IDLE) {
+                isScrolling = true;
                 if (isLastPageEmpty) {
+                    isScrolling = false;
                     return;
                 }
                 PAGE++;
                 getOrders(PAGE);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        isScrolling = false;
+                    }
+                }, 750);
+            } else if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+                isScrolling = true;
             }
         }
 
@@ -98,7 +129,6 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.all_orders);
         handler = new Handler();
-        refHandler = new Handler();
         map = new HashMap<>();
         map.put("page", Integer.toString(PAGE));
         list = new ArrayList<>();
@@ -106,6 +136,13 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         adapter = new OrdersAdapter(this, 0, true, OrdersAdapter.ALL);
         adapter.setActivityClass(AllOrders.class);
         adapter.setListener(this);
+
+        setRefreshOnFalse = new Runnable() {
+            @Override
+            public void run() {
+                isRefreshing = false;
+            }
+        };
 
         recentDay += Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         recentMonth += Calendar.getInstance().get(Calendar.MONTH) + 1;
@@ -155,38 +192,141 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (calendar.get(Calendar.DAY_OF_MONTH) + 1 <= recentDay) {
-//                    changeDate(calendar.get(Calendar.DAY_OF_MONTH) + 1);
-//                    refreshList();
-//                } else if (calendar.get(Calendar.MONTH) + 1 <= recentMonth && calendar.get(Calendar.YEAR) + 1 <= recentYear) {
-                changeDate(calendar.get(Calendar.DAY_OF_MONTH) + 1);
-                refreshList();
-//                }
+                isChangingDate = true;
+                PAGE = 1;
+                swipeLayout.setRefreshing(true);
+
+                disableAllRunnables();
+
+                if(changeDate(calendar.get(Calendar.DAY_OF_MONTH) + 1)) {
+
+                    final long curTime = System.currentTimeMillis();
+                    if (curTime - lastSec > 500) {
+                        isChangingDateRun = new Runnable() {
+                            @Override
+                            public void run() {
+                                isChangingDate = false;
+                            }
+                        };
+                        handler.postDelayed(isChangingDateRun, 800);
+                        lastSec = curTime;
+                        Log.w("TRACE_ALL", "plain search curTime - lastSec > 500");
+                        list.clear();
+                        adapter.notifyDataSetChanged();
+                        getOrders(PAGE);
+                    } else {
+                        if (curTime - lastSec < 200) {
+
+                            switchDate = new Runnable() {
+                                @Override
+                                public void run() {
+                                    isChangingDate = false;
+                                    lastSec = curTime;
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    Log.w("TRACE_ALL", "compare search handler");
+                                    getOrders(PAGE);
+                                }
+                            };
+
+                            handler.postDelayed(switchDate, 1100);
+
+                        } else {
+                            switchDate = new Runnable() {
+                                @Override
+                                public void run() {
+                                    isChangingDate = false;
+                                    lastSec = curTime;
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    Log.w("TRACE_ALL", "plain search handler");
+                                    getOrders(PAGE);
+                                }
+                            };
+                            handler.postDelayed(switchDate, 1000);
+                        }
+                    }
+                }
             }
         });
 
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeDate(calendar.get(Calendar.DAY_OF_MONTH) - 1);
-                refreshList();
-            }
-        });
+                isChangingDate = true;
+                PAGE = 1;
+                swipeLayout.setRefreshing(true);
 
-        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                disableAllRunnables();
 
-                    hideKeyBoard();
+                if(changeDate(calendar.get(Calendar.DAY_OF_MONTH) - 1)){
+                    final long curTime = System.currentTimeMillis();
+                    if (curTime - lastSec > 500) {
+                        isChangingDateRun = new Runnable() {
+                            @Override
+                            public void run() {
+                                isChangingDate = false;
+                            }
+                        };
+                        handler.postDelayed(isChangingDateRun, 800);
+                        lastSec = curTime;
+                        Log.w("TRACE_ALL", "plain search curTime - lastSec > 500");
+                        list.clear();
+                        adapter.notifyDataSetChanged();
+                        getOrders(PAGE);
+                    } else {
+                        if(curTime - lastSec < 200){
 
-                    map.put("search", searchBar.getText().toString());
-                    refreshList();
-                    return true;
+                            switchDate = new Runnable() {
+                                @Override
+                                public void run() {
+                                    isChangingDate = false;
+                                    lastSec = curTime;
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    Log.w("TRACE_ALL", "compare search handler");
+                                    getOrders(PAGE);
+                                }
+                            };
+
+                            handler.postDelayed(switchDate, 1100);
+
+                        } else {
+
+                            switchDate = new Runnable() {
+                                @Override
+                                public void run() {
+                                    isChangingDate = false;
+                                    lastSec = curTime;
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    Log.w("TRACE_ALL", "plain search handler");
+                                    getOrders(PAGE);
+                                }
+                            };
+                            handler.postDelayed(switchDate, 1000);
+                        }
+                    }
                 }
-                return false;
+
+
             }
         });
+
+//        searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//
+//                    hideKeyBoard();
+//
+//                    map.put("search", searchBar.getText().toString());
+//                    refreshList();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
@@ -200,43 +340,116 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
+            public void afterTextChanged(final Editable editable) {
+                disableAllRunnables();
+                PAGE = 1;
+                swipeLayout.setRefreshing(true);
+                isSearching = true;
                 if (editable.length() > 2) {
                     map.put("search", searchBar.getText().toString());
-                    long curTime = System.currentTimeMillis();
-                    if (curTime > milisec + MIN_DT) {
-                        milisec = curTime;
+                    final long curTime = System.currentTimeMillis();
+                    if (curTime - lastSec > 500) {
+                        lastSec = curTime;
+                        Log.w("TRACE_ALL", "plain search curTime - lastSec > 500");
                         list.clear();
-                        refreshList();
-                    } else {
-                        refHandler.removeCallbacksAndMessages(null);
-                        refHandler.postDelayed(new Runnable() {
+                        adapter.notifyDataSetChanged();
+                        isSearchingRunFalse = new Runnable() {
                             @Override
                             public void run() {
-                                list.clear();
-                                refreshList();
+                                isSearching = false;
                             }
-                        }, MIN_DT);
+                        };
+                        handler.postDelayed(isSearchingRunFalse, 800);
+                        getOrders(PAGE);
+                    } else {
+                        if(curTime - lastSec < 100){
+
+                            searchCompare = new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (lastString.equalsIgnoreCase(editable.toString()) && editable.length() > 2) {
+                                        map.put("search", editable.toString());
+                                        isSearching = false;
+                                        lastSec = curTime;
+                                        list.clear();
+                                        adapter.notifyDataSetChanged();
+                                        Log.w("TRACE_ACTIVE", "compare search handler");
+                                        getOrders(PAGE);
+                                    } else if (lastString.length() < 2) {
+                                        if (setSearchOnFalse != null)
+                                            handler.removeCallbacks(setSearchOnFalse);
+                                        map.remove("search");
+
+                                        isSearching = false;
+                                        refreshList();
+                                    }
+
+                                    lastString = editable.toString();
+                                }
+                            };
+                            if (lastString.equalsIgnoreCase("")) {
+                                lastString = editable.toString();
+                            }
+
+                            if(editable.length() == 0)
+                                lastString = "";
+
+                            if (setSearchOnFalse != null) {
+                                handler.removeCallbacks(setSearchOnFalse);
+                            }
+                            if (searchCompare != null) {
+                                handler.removeCallbacks(searchCompare);
+                            }
+
+                            handler.postDelayed(searchCompare, 900);
+
+                        } else {
+                            if (setSearchOnFalse != null) {
+                                handler.removeCallbacks(setSearchOnFalse);
+                            }
+                            if (searchCompare != null) {
+                                handler.removeCallbacks(searchCompare);
+                            }
+
+                            setSearchOnFalse = new Runnable() {
+                                @Override
+                                public void run() {
+                                    isSearching = false;
+                                    lastSec = curTime;
+                                    list.clear();
+                                    adapter.notifyDataSetChanged();
+                                    Log.w("TRACE_ALL", "plain search handler");
+                                    getOrders(PAGE);
+                                }
+                            };
+                            handler.postDelayed(setSearchOnFalse, 1000);
+                        }
+                    }
+                } else {
+                    if (setSearchOnFalse != null) {
+                        handler.removeCallbacks(setSearchOnFalse);
+                    }
+                    if (searchCompare != null) {
+                        handler.removeCallbacks(searchCompare);
                     }
 
+                    if (fullRefresh != null) {
+                        handler.removeCallbacks(fullRefresh);
+                    }
 
-                } else if (editable.length() == 0) {
+                    lastString = "";
+
                     map.remove("search");
-                    long curTime = System.currentTimeMillis();
-                    if (curTime > milisec + MIN_DT) {
-                        milisec = curTime;
-                        list.clear();
-                        refreshList();
-                    } else {
-                        refHandler.removeCallbacksAndMessages(null);
-                        refHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                list.clear();
-                                refreshList();
-                            }
-                        }, MIN_DT);
-                    }
+
+                    fullRefresh = new Runnable() {
+                        @Override
+                        public void run() {
+                            isSearching = false;
+                            refreshList();
+                        }
+                    };
+
+                    handler.postDelayed(fullRefresh, 1800);
                 }
             }
         });
@@ -251,7 +464,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         }
     }
 
-    private void changeDate(int day) {
+    private boolean changeDate(int day) {
         Log.d("lastDate", "called changeDate();" + " with 'int day = " + Integer.toString(day));
         if (day != Keys.DATE_THAT_DOESNT_EXIST) {
             calendar.set(Calendar.DAY_OF_MONTH, day);
@@ -271,28 +484,35 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         title.setText(resultDay + "-" + resultMonth + "-" + Integer.toString(calendar.get(Calendar.YEAR)));
         map.put("from_perform_date", Integer.toString(calendar.get(Calendar.YEAR)) + "-" + resultMonth + "-" + resultDay);
         map.put("to_perform_date", Integer.toString(calendar.get(Calendar.YEAR)) + "-" + resultMonth + "-" + resultDay);
+        return true;
     }
 
     private void refreshList() {
+        isRefreshing = true;
         swipeLayout.setRefreshing(true);
-        list.clear();
-        adapter.notifyDataSetChanged();
         PAGE = 1;
         isLastPageEmpty = false;
+        list.clear();
+        adapter.notifyDataSetChanged();
         getOrders(PAGE);
+        handler.removeCallbacks(setRefreshOnFalse);
+        handler.postDelayed(setRefreshOnFalse, 1500);
     }
 
     private void getOrders(final int PAGE) {
-        if (list.size() >= 10 && PAGE == 0) {
+        if (PAGE == 0) {
             map.put("page", "1");
-            map.put("limit", Integer.toString(list.size()));
+            if(list.size() != 0){
+                map.put("limit", Integer.toString(list.size()));
+            }
         } else {
             map.put("page", Integer.toString(PAGE));
+            map.remove("limit");
         }
+
         RestModuleNew.provideRestService().getAuth(ALL_ORDERS, AppSettingsProvider.getInstance().getToken(AllOrders.this), map, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-                swipeLayout.setRefreshing(false);
                 try {
                     Orders orders = ObjectMap.getInstance().readValue(s, Orders.class);
                     if (PAGE == 0) {
@@ -300,12 +520,24 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                         for (Orders.Data x : orders.getData()) {
                             list.add(x);
                         }
+
+                        if (list.size() != 0) {
+                            hint.setVisibility(View.GONE);
+                        } else {
+                            hint.setVisibility(View.VISIBLE);
+                        }
+
+                        if (list.size() > 10) {
+                            isLastPageEmpty = false;
+                        }
+
                         adapter.notifyDataSetChanged();
+                        swipeLayout.setRefreshing(false);
                     } else {
                         visualizeOrders(orders);
                     }
-
                 } catch (IOException e) {
+                    swipeLayout.setRefreshing(false);
                     e.printStackTrace();
                 }
             }
@@ -316,7 +548,6 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                 toast(HttpErrorHandler.handleError(error));
             }
         });
-
     }
 
     @Override
@@ -325,9 +556,13 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
         refreshList = new Runnable() {
             @Override
             public void run() {
-                getOrders(0);
-                Log.w("REFRESH", Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
+                if(!isRefreshing && !isScrolling && !isSearching && !isChangingDate) {
+                    Log.w("TRACE_ALL", "auto refresh = ON");
+                    getOrders(0);
+                }
+                Log.w("REFRESH_ALL", Integer.toString(AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext())));
                 handler.postDelayed(this, AppSettingsProvider.getInstance().getRefreshListTime(getApplicationContext()) * 1000);
+
             }
         };
 
@@ -337,19 +572,20 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
     @Override
     protected void onPause() {
         super.onPause();
-        handler.removeCallbacks(refreshList);
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(refreshList);
+        handler.removeCallbacksAndMessages(null);
     }
 
     public void visualizeOrders(Orders orders) {
         List<Orders.Data> listTmp = new ArrayList<>();
         for (Orders.Data x : orders.getData()) {
-            if(list.size() == 0){
+            hint.setVisibility(View.GONE);
+            if (list.size() == 0) {
                 list.add(x);
             } else {
                 for (Iterator<Orders.Data> dd = list.iterator(); list.iterator().hasNext(); ) {
@@ -362,7 +598,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
                             e.printStackTrace();
                             break;
                         }
-                    } else{
+                    } else {
                         break;
                     }
                 }
@@ -378,6 +614,7 @@ public class AllOrders extends Activity implements OrdersAdapter.OnOrderClickLis
 
         adapter.setListOfData(list);
         adapter.notifyDataSetChanged();
+        swipeLayout.setRefreshing(false);
 
 //        if(calendar.get(Calendar.DAY_OF_MONTH) == recentDay && calendar.get(Calendar.MONTH)+1 == recentMonth && calendar.get(Calendar.YEAR) == recentYear)
 //            rightButton.setBackgroundColor(Color.parseColor("#d1d1d1"));
