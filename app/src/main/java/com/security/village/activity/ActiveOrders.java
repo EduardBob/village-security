@@ -62,9 +62,12 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
     private int PAGE = 1;
     private int MIN_DT = 500;
     private boolean isLastPageEmpty = false;
-    private int recentDay;
-    private int recentMonth;
-    private int recentYear;
+    private int fromDay;
+    private int fromMonth;
+    private int fromYear;
+    private int toDay;
+    private int toMonth;
+    private int toYear;
     private String lastString = "";
 
     private boolean isScrolling, isRefreshing, isSearching;
@@ -144,11 +147,24 @@ public class ActiveOrders extends Activity implements OrdersAdapter.OnOrderClick
         adapter.setActivityClass(ActiveOrders.class);
         adapter.setListener(this);
 
-        recentDay += Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-        recentMonth += Calendar.getInstance().get(Calendar.MONTH) + 1;
-        recentYear += Calendar.getInstance().get(Calendar.YEAR);
+        Calendar fromCalendar = Calendar.getInstance();
+        fromCalendar.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) - 1);
 
-        map.put("from_perform_date", Integer.toString(recentYear) + "-" + Integer.toString(recentMonth) + "-" + Integer.toString(recentDay));
+        fromDay += fromCalendar.get(Calendar.DAY_OF_MONTH);
+        fromMonth += fromCalendar.get(Calendar.MONTH) + 1;
+        fromYear += fromCalendar.get(Calendar.YEAR);
+
+        Calendar toCalendar = Calendar.getInstance();
+        toCalendar.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().get(Calendar.DAY_OF_MONTH) + 1);
+
+        toDay += toCalendar.get(Calendar.DAY_OF_MONTH);
+        toMonth += toCalendar.get(Calendar.MONTH) + 1;
+        toYear += toCalendar.get(Calendar.YEAR);
+
+        map.put("from_perform_date", Integer.toString(fromYear) + "-" + Integer.toString(fromMonth) + "-" + Integer.toString(fromDay));
+        
+        
+        map.put("to_perform_date", Integer.toString(toYear) + "-" + Integer.toString(toMonth) + "-" + Integer.toString(toDay));
 
         my_profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
